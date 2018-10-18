@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"          
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+    <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+            <ui:define name="content">
+    <h:form id="form" >
+        <h2>Detalle Planilla</h2>
+        <p:dataTable id="tbl" var="plan" value="#{verDetalleController.planillaspagadas}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" sortBy="#{plan.ffin}"
+                 emptyMessage="No Ordenes found with given criteria" style="margin-bottom:20px">
+ 
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="cars" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
+            </h:commandLink>
+        </f:facet>
+            
+        <p:column headerText="Fecha Inicio" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Fecha Inicio" />
+            </f:facet>  
+            <h:outputText value="#{plan.finicio}" >
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+        
+        <p:column headerText="Fecha Fin" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Fecha Fin" />
+            </f:facet>
+            <h:outputText value="#{plan.ffin}" >
+            <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+        
+        <p:column headerText="Fecha Pago" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Fecha Pago" />
+            </f:facet>
+            <h:outputText value="#{plan.fpagado}" >
+            <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column> 
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Operario" />
+            </f:facet>
+            <h:outputText value="#{plan.empleadomo.persona.primernombre} #{plan.empleadomo.persona.segundonombre} #{plan.empleadomo.persona.primerapellido} #{plan.empleadomo.persona.segundoapellido}" />
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Dias Laborados" />
+            </f:facet>
+            <h:outputText value="#{plan.diaslab}" >
+                <f:convertNumber type="number" pattern="0.00"/>
+            </h:outputText>
+        </p:column>
+                        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Mano de Obra Total" />
+            </f:facet>
+            <h:outputText value="#{plan.montomototal}" >
+                  <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Salario Base" />
+            </f:facet>
+            <h:outputText value="#{plan.salariobase}" >
+               <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Subtotal MO Gravado" />
+            </f:facet>
+            <h:outputText value="#{plan.subtotalgravado}" >
+                  <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Renta"/>
+            </f:facet>
+            <h:outputText value="#{plan.renta}" >
+              <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Sumatoria Descuentos" />
+            </f:facet>
+            <h:outputText value="#{plan.sumadescuentos}" >
+              <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto Pagado" />
+            </f:facet>
+            <h:outputText value="#{plan.montoapagar}" >
+              <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+            
+         <p:summaryRow >
+            <p:column colspan="10" style="text-align:right">
+                <h:outputText value="Total:" />
+            </p:column>
+             <p:column >
+                <h:outputText value="#{verDetalleController.suma}" >
+                    <f:convertNumber type="currency" currencySymbol="$" />
+                </h:outputText>
+            </p:column>
+        </p:summaryRow>
+    </p:dataTable>
+        <p:link value="(----VOLVER A PLANILLAS----)" outcome="/contabilidad/imprimirPlanilla.xhtml"></p:link>
+        
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="cars" pageOnly="true"/>
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="cars" pageOnly="true" />
+    </h:commandLink>
+    </h:form>              
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

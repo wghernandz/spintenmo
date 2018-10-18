@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="miform">
+                 
+    <p:growl id="growl" sticky="true" showDetail="true"/>
+ 
+    <p:wizard flowListener="#{calcularPlanillaController.onFlowProcess}" style="align-content: center">
+        <p:tab id="descuentos" title="Descuentos">
+            <p:panel header="Descuentos a aplicar en planilla">
+                <p:messages />
+                <p:commandButton id="cdes" value="Cargar Descuentos" action="#{calcularPlanillaController.cargaDescuentos()}" 
+                                 disabled="#{calcularPlanillaController.cargadescuento}" update="desc,cdes"></p:commandButton>
+                <h:panelGrid columns="1" columnClasses="label, value">
+                    <p:dataTable id="desc" var="desc" value="#{calcularPlanillaController.descuentosaaplicar}">
+                        <p:column headerText="Nombre Operario">
+                            <h:outputText value="#{desc.empleadomo.persona.primernombre} 
+                                          #{desc.empleadomo.persona.segundonombre} 
+                                          #{desc.empleadomo.persona.primerapellido} #{desc.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Concepto Descuento">
+                            <h:outputText value="#{desc.concepto}" />
+                        </p:column>
+ 
+                        <p:column headerText="Total Descuento">
+                            <h:outputText value="#{desc.monto}" >
+                                <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Deuda Pendiente">
+                            <h:outputText value="#{desc.montopend}" >
+                                <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Descuento a Aplicar">
+                            <p:commandLink update=":form3:ordenDetail3" oncomplete="PF('dlgDescuento').show();" action="#{calcularPlanillaController.setDescuento(desc)}" >
+                                <h:outputText value="#{desc.descquincenal}" >
+                                    <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                                </h:outputText>
+                            </p:commandLink>
+                        </p:column>
+                        
+                    </p:dataTable> 
+                </h:panelGrid>
+            </p:panel>
+        </p:tab>
+ 
+        <p:tab id="detalleplanilla" title="Detalle Planilla a Pagar">
+            <p:panel header="Listado de Ordenes de Trabajo a Calcular">
+                <p:messages />
+                <h:panelGrid columns="2" columnClasses="label, value">
+                    <h>Trabajos Finalizados</h>
+                    <p:dataTable var="fin" value="#{calcularPlanillaController.otfinalizadas}">
+                        <p:column headerText="Nombre Operario">
+                            <h:outputText value="#{fin.empleadomo.persona.primernombre} 
+                                          #{fin.empleadomo.persona.segundonombre}
+                                          #{fin.empleadomo.persona.primerapellido} #{fin.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{fin.ordentrabajo.codigo}" />
+                        </p:column>
+ 
+                        <p:column headerText="Aseguradora">
+                            <h:outputText value="#{fin.ordentrabajo.aseguradoracliente.nombrecliente}" />
+                        </p:column>
+                        
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{fin.ordentrabajo.placa}" />
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Finalizado">
+                            <h:outputText value="#{fin.fechaterminado}" >
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Monto a Pagar">
+                            <h:outputText value="#{fin.montomo}" >
+                                <f:convertNumber type="number" pattern="$ 0.00"/>
+                            </h:outputText>
+                        </p:column>
+                        
+                    </p:dataTable>
+                    <h>Anticipos de Mano de Obra</h>
+                    <p:dataTable var="ant" value="#{calcularPlanillaController.otanticipos}">
+                        <p:column headerText="Nombre Operario">
+                            <h:outputText value="#{ant.operacionesordent.empleadomo.persona.primernombre} 
+                                          #{ant.operacionesordent.empleadomo.persona.segundonombre}
+                                          #{ant.operacionesordent.empleadomo.persona.primerapellido} #{ant.operacionesordent.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.codigo}" />
+                        </p:column>
+ 
+                        <p:column headerText="Aseguradora">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" />
+                        </p:column>
+                        
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.placa}" />
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Finalizado">
+                            <h:outputText value="#{ant.operacionesordent.fechaterminado}" />
+                        </p:column>
+                        
+                        <p:column headerText="Monto Anticipo a Pagar">
+                            <h:outputText value="#{ant.montoanticipo}" >
+                                <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                            </h:outputText>
+                        </p:column>
+                        
+                    </p:dataTable> 
+                </h:panelGrid>
+            </p:panel>
+        </p:tab>
+ 
+        <p:tab id="aplicarplanilla" title="Generar Planilla" >
+               
+            <p:panel id="mipanel" header="Generar planilla quincenal">
+                <h:panelGrid columns="2" columnClasses="label, value">
+                   
+                
+                    <h:outputText value="Generar Planilla con Fecha:" />
+                    <p:calendar id="fechacalculo" value="#{calcularPlanillaController.fechacalculo}" pattern="dd-MM-yyyy" 
+                                disabled="#{calcularPlanillaController.disabledgenerar}" locale="es">
+                        <f:ajax event="dateSelect" listener="#{calcularPlanillaController.setFechacalculo(fechacalculo)}" immediate="true" ></f:ajax>
+                    </p:calendar>
+                    <p:commandButton value="Generar" disabled="#{calcularPlanillaController.disabledgenerar}">
+                        <p:ajax event="click" listener="#{calcularPlanillaController.generarPlanilla}" update="growl,pmo,elimp,pago"></p:ajax>
+                    </p:commandButton>
+                   
+                </h:panelGrid>
+            </p:panel>
+            
+                <p:dataTable id="pmo" var="pmox" value="#{calcularPlanillaController.planillacalculada}">
+                    <p:column headerText="Nombre Operario" width="250">
+                            <h:outputText value="#{pmox.empleadomo.persona.primernombre} 
+                                          #{pmox.empleadomo.persona.segundonombre}
+                                          #{pmox.empleadomo.persona.primerapellido} #{pmox.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Desde">
+                            <h:outputText value="#{pmox.finicio}" >
+                            <f:convertDateTime pattern="dd-MM-yyyy" />
+                            </h:outputText>
+                        </p:column>
+ 
+                        <p:column headerText="Hasta">
+                            <h:outputText value="#{pmox.ffin}" >
+                            <f:convertDateTime pattern="dd-MM-yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Dias Laborados">
+                            <p:commandLink update=":form2:ordenDetail" oncomplete="PF('Dias').show();" action="#{calcularPlanillaController.setPlanillamo(pmox)}" >
+                                <h:outputText value="#{pmox.diaslab}">
+                                    <f:convertNumber type="number" pattern="0.00"/>
+                                </h:outputText>
+                            </p:commandLink>
+                        </p:column>
+                        
+                        <p:column headerText="Mano de Obra Total">
+                            <h:outputText value="#{pmox.montomototal}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Salario Base">
+                            <h:outputText value="#{pmox.salariobase}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+                
+                        <p:column headerText="Monto gravado">
+                            <h:outputText value="#{pmox.subtotalgravado}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+                
+                        <p:column headerText="Renta">
+                            <h:outputText value="#{pmox.renta}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+                
+                        <p:column headerText="Sumatoria Descuentos">
+                            <h:outputText value="#{pmox.sumadescuentos}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+                
+                        <p:column headerText="Monto a pagar">
+                            <h:outputText value="#{pmox.montoapagar}" >
+                            <f:convertNumber pattern="$ 0.00" />
+                            </h:outputText>
+                        </p:column>
+            </p:dataTable>
+           
+            <p:commandButton type="button" id="pago" value="Pagar Planilla" disabled="#{calcularPlanillaController.opplanilla}" onclick="PF('dconfirmar').show();">
+              
+            </p:commandButton>
+            
+            <p:commandButton id="elimp" value="Eliminar Planilla" disabled="#{calcularPlanillaController.opplanilla}" >
+                <p:ajax event="click" listener="#{calcularPlanillaController.elimPlanilla}"  
+                        update="growl,pmo,mipanel,elimp,pago" ></p:ajax>
+            </p:commandButton>
+        </p:tab>
+        
+    </p:wizard>
+      
+</h:form>
+           
+     
+    <p:dialog header="Cambiar Dias Laborados" id="dias" widgetVar="Dias" showEffect="explode" hideEffect="bounce" height="125" width="350" closable="false">
+    <h:form id="form2">
+        <p:growl id="mismsg" />
+                <p:outputPanel id="ordenDetail" style="text-align:center;">
+                  
+                <p:panelGrid columns="2" >
+                <h:outputText value="Nombre:"/>
+                <h:inputText id="nombreemp" 
+                   value="#{calcularPlanillaController.planillamo.empleadomo.persona.primernombre} #{calcularPlanillaController.planillamo.empleadomo.persona.segundonombre} #{calcularPlanillaController.planillamo.empleadomo.persona.primerapellido} #{calcularPlanillaController.planillamo.empleadomo.persona.segundoapellido}
+                   " disabled="true"></h:inputText>
+                
+                <h:outputText value="Dias laborados:"/>
+                <p:inputNumber id="diaslab" value="#{calcularPlanillaController.planillamo.diaslab}"
+                               minValue="0.00" maxValue="15.00" decimalPlaces="2"></p:inputNumber>
+                <p:commandButton value="INGRESAR" icon="ui-icon-disk" action="#{calcularPlanillaController.actualizarPlanilla}" 
+                                  onsuccess=":mismsg" >
+                </p:commandButton>    
+                <p:commandButton value="CANCELAR" id="cancel" onclick="dlg3.hide();" immediate="true"/>
+                </p:panelGrid>
+               
+                </p:outputPanel>
+    </h:form>    
+        </p:dialog>
+    
+    <p:dialog header="Cambiar Monto de Descuento" id="descuento" widgetVar="dlgDescuento" showEffect="explode" hideEffect="bounce" height="150" width="400" closable="false">
+    <h:form id="form3">
+        <p:growl id="mismsgd" />
+                <p:outputPanel id="ordenDetail3" style="text-align:center;">
+                  
+                <p:panelGrid columns="2" >
+                <h:outputText value="Nombre:"/>
+                <h:inputText id="nombreemp" 
+                             value="#{calcularPlanillaController.descuento.empleadomo.persona.primernombre} #{calcularPlanillaController.descuento.empleadomo.persona.segundonombre} #{calcularPlanillaController.descuento.empleadomo.persona.primerapellido} #{calcularPlanillaController.descuento.empleadomo.persona.segundoapellido}
+                   " disabled="true"></h:inputText>
+                
+                <h:outputText value="Monto a Descontar en la Presente Quincena:"/>
+                <p:inputNumber id="descquinc" value="#{calcularPlanillaController.descuento.descquincenal}"
+                               minValue="0.00" maxValue="#{calcularPlanillaController.descuento.montopend}" decimalPlaces="2"></p:inputNumber>
+                               <p:commandButton value="ACEPTAR" icon="ui-icon-disk" action="#{calcularPlanillaController.modDescuentoquinc()}" 
+                                  onsuccess=":mismsgd" oncomplete=":pmo" >
+                </p:commandButton>    
+                <p:commandButton value="CANCELAR" id="cancel" onclick="dlg3.hide();" immediate="true"/>
+                </p:panelGrid>  
+                </p:outputPanel>
+    </h:form>    
+    </p:dialog>
+                
+    <p:dialog id="confirmar" widgetVar="dconfirmar">
+        <h:form>
+           <p:panelGrid columns="3" >
+           <h:outputText value="Esta Seguro/a de pagar?"/>     
+           <p:commandButton id="pago" value="SI" oncomplete="PF('dconfirmar').hide();" >
+               <p:ajax event="click" listener="#{calcularPlanillaController.pagarPlanilla}" 
+                       update="miform:growl,miform:pmo,miform:mipanel,miform:elimp,miform:pago"></p:ajax>
+            </p:commandButton>
+            <p:commandButton value="NO" id="cancel" onclick="confirmar.hide();" immediate="true"/>
+           </p:panelGrid>
+        </h:form>
+    </p:dialog>
+                
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

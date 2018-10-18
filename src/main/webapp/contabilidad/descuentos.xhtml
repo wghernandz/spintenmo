@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="principal">
+    <p:growl id="msgs" showDetail="false" />
+ 
+    <p:fieldset style="margin-bottom:20px">
+        <h2 style="text-align: center">INGRESO DESCUENTOS A EMPLEADOS</h2>
+    </p:fieldset>
+    <p:fieldset legend="DATOS DE EMPLEADO" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="DUI:"/>
+            <p:inputText id="dui" binding="#{dui}" value="#{ingresoDescuentosController.persona.pdui}" disabled="#{ingresoDescuentosController.desactivar}" >
+                <p:ajax event="change" listener="#{ingresoDescuentosController.operarioSegundui(dui.value)}" update="empleado,cargo"></p:ajax>
+            </p:inputText>
+            <h:outputText value="Operario:"/>
+            <p:selectOneMenu id="empleado" value="#{ingresoDescuentosController.persona.id}" binding="#{personaid}" 
+                             style="width:250px" required="true" requiredMessage="Cargo" >
+                    <f:selectItem itemLabel="Seleccione Operario" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresoDescuentosController.empleadosmo}" var="mioperario" 
+                    itemLabel="#{mioperario.persona.primernombre} #{mioperario.persona.segundonombre} 
+                    #{mioperario.persona.primerapellido} #{mioperario.persona.segundoapellido}" 
+                    itemValue="#{mioperario.persona.id}"/>
+                    <p:ajax event="change" listener="#{ingresoDescuentosController.empSegunid(personaid.value)}" update="empleado,cargo,dui"></p:ajax>
+            </p:selectOneMenu>
+            <h:outputText value="Cargo:"/>
+            <p:inputText id="cargo" value="#{ingresoDescuentosController.empleadomo.cargo}" disabled="true"></p:inputText>
+        </h:panelGrid>
+    </p:fieldset>
+    
+    <p:fieldset legend="DATOS DESCUENTO" style="margin-bottom:20px">
+        <h:panelGrid columns="6" cellpadding="5">
+            <h:outputText value="Fecha Ingreso:"/>
+            <p:calendar id="fingreso" value="#{ingresoDescuentosController.descuento.fingresodesc}" pattern="dd-MM-yyy" readonlyInput="true" locale="es" ></p:calendar>
+            <h:outputText value="Concepto:"/>
+            <p:inputText id="concepto" value="#{ingresoDescuentosController.descuento.concepto}" size="30" ></p:inputText>
+            <h:outputText value="Descuento de Ley?"/>
+            <h:selectBooleanCheckbox id="deleycheck" value="#{ingresoDescuentosController.descuento.deley}">
+                            <p:ajax update="monto" />
+            </h:selectBooleanCheckbox> 
+            <h:outputText value="Monto $"/>
+            <p:inputNumber id="monto" value="#{ingresoDescuentosController.descuento.monto}" 
+                           minValue="0.00" disabled="#{ingresoDescuentosController.descuento.deley}"></p:inputNumber>
+            <h:outputText value="Aplicar descuento quincenal por $" />
+            <p:inputNumber id="montoquinc" value="#{ingresoDescuentosController.descuento.descquincenal}" 
+                           minValue="0.00" required="true" requiredMessage="Descuento Quincenal Requerido"></p:inputNumber>
+            
+        </h:panelGrid>
+    </p:fieldset>
+    <p:fieldset style="margin-bottom:20px">
+       <h:panelGrid columns="4" cellpadding="5">
+           <p:commandButton value="Guardar" id="guardar" update="principal" icon="ui-icon-disk" action="#{ingresoDescuentosController.guardarDescuento()}" ajax="false" disabled="#{ingresoDescuentosController.desactivarboton}"/>
+           <p:commandButton value="Eliminar" id="elim" update="tbl" icon="ui-icon-disk" action="#{ingresoDescuentosController.eliminar()}" ajax="false" disabled="#{ingresoDescuentosController.desactivarboton}" />
+           <p:commandButton value="Nuevo" id="nuevo" action="#{ingresoDescuentosController.nuevo()}" ajax="false" immediate="true" />
+       </h:panelGrid>
+    </p:fieldset>
+</h:form>
+          <h2 style="text-align: center">EMPLEADOS CON DESCUENTOS</h2>  
+   <h:form id="form" >
+    
+       <p:dataTable id="tbl" var="descuento" value="#{ingresoDescuentosController.descuentos}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="5" style="margin-bottom:20px" widgetVar="otpasigTable" 
+                 emptyMessage="No Operaciones found with given criteria" filteredValue="#{ingresoDescuentosController.descuentos}">
+ 
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="cars" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
+            </h:commandLink>
+ 
+        </f:facet>
+        <p:column width="300" headerText="Empleado" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Empleado" />
+            </f:facet>
+            <p:commandLink action="#{ingresoDescuentosController.setDescuento(descuento)}" update=":principal" disabled="#{descuento.monto.compareTo(descuento.montopend)!=0}">
+            <h:outputText value="#{descuento.empleadomo.persona.primernombre} #{descuento.empleadomo.persona.segundonombre} #{descuento.empleadomo.persona.primerapellido} #{descuento.empleadomo.persona.segundoapellido}" />
+            </p:commandLink>
+        </p:column>
+                        
+        <p:column width="100"  headerText="fechaingreso" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Fecha Ingreso Descuento" />
+            </f:facet>
+            <h:outputText value="#{descuento.fingresodesc}">
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"></f:convertDateTime>
+            </h:outputText>
+        </p:column>
+        
+         <p:column width="300">
+            <f:facet name="header">
+                <h:outputText value="Concepto" />
+            </f:facet>
+             <h:outputText value="#{descuento.concepto}"/>
+        </p:column>
+        
+        <p:column width="100">
+            <f:facet name="header">
+                <h:outputText value="Monto Total" />
+            </f:facet>
+            <h:outputText value="#{descuento.monto}">
+                <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+            </h:outputText>
+        </p:column>
+           
+        <p:column width="90">
+            <f:facet name="header">
+                <h:outputText value="DE LEY?" />
+            </f:facet>
+            <h:selectBooleanCheckbox value="#{descuento.deley}"></h:selectBooleanCheckbox>
+        </p:column> 
+         
+        <p:column width="90">
+            <f:facet name="header">
+                <h:outputText value="Descuento Quincenal" />
+            </f:facet>
+            <h:outputText value="#{descuento.descquincenal}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            
+        </p:column> 
+                                     
+        
+        <p:column width="90">
+            <f:facet name="header">
+                <h:outputText value="Monto Pendiente" />
+            </f:facet>
+            <h:outputText value="#{descuento.montopend}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+        </p:column>  
+        
+    </p:dataTable>
+ 
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="cars" pageOnly="true"/>
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="cars" pageOnly="true" />
+    </h:commandLink>
+    </h:form>        
+                
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

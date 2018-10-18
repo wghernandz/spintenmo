@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+          
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <body>
+        
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+            <ui:define name="content">
+                <h:form id="form" >
+    
+                    <p:dataTable id="tbl" var="orden" value="#{costosmoAsignadoController.listaotcosteadas}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
+                 emptyMessage="No Operaciones found with given criteria" >
+ 
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="costos-asignados"  />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="costos-asginados" options="#{costosmoAsignadoController.pdfOpt}"/>
+            </h:commandLink>
+ 
+        </f:facet>
+        <p:column width="120" filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Codigo Orden" />
+            </f:facet>
+            <p:commandLink update=":form2:ordenDetail" oncomplete="PF('dlg3').show();" action="#{costosmoAsignadoController.setOperacionesordent(orden)}">
+            <h:outputText value="#{orden.ordentrabajo.codigo}" />
+            </p:commandLink>
+        </p:column>
+                        
+        <p:column filterBy="#{orden.ordentrabajo.placa}" headerText="Placa" footerText="contains" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Placa" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.placa}" />
+        </p:column>
+        
+         <p:column width="75">
+            <f:facet name="header">
+                <h:outputText value="Tipo Operaciones" />
+            </f:facet>
+                <h:outputText value="#{orden.tipooperaciones}"/>
+        </p:column>
+        
+        <p:column width="100">
+            <f:facet name="header">
+                <h:outputText value="Estado" />
+            </f:facet>
+            <h:outputText value="#{orden.estado}" />
+        </p:column>
+                        
+        <p:column width="90">
+            <f:facet name="header">
+                <h:outputText value="Monto Minimo" />
+            </f:facet>
+            
+                <h:outputText value="#{orden.montomin}" ><f:convertNumber type="number" pattern="$ 0.00"/></h:outputText>
+                <h:outputText value="#{orden.montominp}" ><f:convertNumber type="number" pattern="$ 0.00"/></h:outputText>
+        </p:column>
+                        
+        <p:column width="90">
+            <f:facet name="header">
+                <h:outputText value="Monto Maximo" />
+            </f:facet>
+            <h:outputText value="#{orden.montomax}" ><f:convertNumber type="number" pattern="$ 0.00"/></h:outputText>
+            <h:outputText value="#{orden.montomaxp}"><f:convertNumber type="number" pattern="$ 0.00"/></h:outputText>
+        </p:column> 
+                        
+        <p:column width="80">
+            <f:facet name="header">
+                <h:outputText value="Fecha Autorizado" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.fechaautorizado}" >
+              <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column width="200">
+            <f:facet name="header">
+                <h:outputText value="Aseguradora"/>
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Marca" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Modelo" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}" />
+        </p:column>   
+        
+    </p:dataTable>
+ 
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="costos-asignados" pageOnly="true"/>
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="costos-asignados" pageOnly="true" options="#{costosmoAsignadoController.pdfOpt}" />
+    </h:commandLink>
+    </h:form>
+     
+    <p:dialog header="Cambiar Montos" id="cambiarmontomin" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" height="150" width="600" closable="false">
+    <h:form id="form2">
+        <p:growl id="mismsg" />
+                <p:outputPanel id="ordenDetail" style="text-align:center;">
+                 <h:outputText value="MONTOS ENDEREZADO"/>
+                <h:panelGrid columns="4" cellpadding="3">
+                <h:outputText value="Monto Minimo"/>
+                <p:inputNumber id="montomin" binding="#{montominComponent}" value="#{costosmoAsignadoController.operacionesordent.montomin}" 
+                               disabled="#{costosmoAsignadoController.operacionesordent.montomin==null}" 
+                               decimalPlaces="2" ></p:inputNumber>             
+                
+                <h:outputText value="Monto Maximo"/>
+                <p:inputNumber id="montomax" value="#{costosmoAsignadoController.operacionesordent.montomax}"
+                               disabled="#{costosmoAsignadoController.operacionesordent.montomax==null}" 
+                               decimalPlaces="2" validatorMessage="El monto Maximo debe ser Mayor o Igual al monto Minimo" validator="#{costosmoAsignadoController.validate}">
+                                <f:attribute name="montomin" value="#{montominComponent.value}"/> 
+                </p:inputNumber>
+                </h:panelGrid>
+                <h:outputText value="MONTOS PINTURA"/>
+                <h:panelGrid columns="4" cellpadding="3">
+                <h:outputText value="Monto Minimo"/>
+                <p:inputNumber id="montominp" binding="#{montominpComponent}" value="#{costosmoAsignadoController.operacionesordent.montominp}"  
+                               disabled="#{costosmoAsignadoController.operacionesordent.montominp==null}"
+                               decimalPlaces="2" ></p:inputNumber>             
+                
+                <h:outputText value="Monto Maximo"/>
+                <p:inputNumber id="montomaxp" value="#{costosmoAsignadoController.operacionesordent.montomaxp}" 
+                               disabled="#{costosmoAsignadoController.operacionesordent.montominp==null}" 
+                               validatorMessage="El monto Maximo debe ser Mayor o Igual al monto Minimo" validator="#{costosmoAsignadoController.validatepintura}"
+                               decimalPlaces="2">
+                            <f:attribute name="montominp" value="#{montominpComponent.value}"/> 
+                            </p:inputNumber>
+                
+                </h:panelGrid>
+                <h:panelGrid id="costosp" columns="4" cellpadding="3">
+                <p:commandButton value="MODIFICAR" id="guardarpin" icon="ui-icon-disk" 
+                                 action="#{costosmoAsignadoController.modificarMonto}" update=":form2:ordenDetail" onsuccess=":mismsg" oncomplete=":form" >
+                </p:commandButton>    
+                <p:commandButton value="CANCELAR" id="cancel" onclick="dlg3.hide();" update="form,form2" immediate="true"/>
+                </h:panelGrid>
+                </p:outputPanel>
+    </h:form>    
+        </p:dialog>
+                        
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

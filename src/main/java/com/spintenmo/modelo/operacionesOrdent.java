@@ -8,12 +8,14 @@ package com.spintenmo.modelo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -25,8 +27,10 @@ public class operacionesOrdent implements Serializable {
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_OPERACIONESORDENT")
     @SequenceGenerator(name="SEQ_ID_OPERACIONESORDENT",sequenceName="seq_idoperacionesordent", allocationSize=1)
     private int id;
+    @ManyToOne
     @JoinColumn(name="idordentrabajo")
     private ordenTrabajo ordentrabajo;
+    @ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name="idpersona")
     private empleadoMo empleadomo;
     @Column(name="rutaenderezado")
@@ -59,7 +63,21 @@ public class operacionesOrdent implements Serializable {
     private String tipooperaciones;
     @Column(name="rutarecibo")
     private String rutarecibo;
-
+    @Column(name="montopendiente")
+    private BigDecimal montopendiente;
+    @Column(name="montomaxp")
+    private BigDecimal montomaxp;
+    @Column(name="montominp")
+    private BigDecimal montominp;
+    @Column(name="montoplanilla")
+    private BigDecimal montoplanilla;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="fechapago")
+    private Date fechapago;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="fechaanticipo")
+    private Date fechaanticipo;
+    
     public int getId() {
         return id;
     }
@@ -186,6 +204,54 @@ public class operacionesOrdent implements Serializable {
 
     public void setRutarecibo(String rutarecibo) {
         this.rutarecibo = rutarecibo;
+    }
+
+    public BigDecimal getMontopendiente() {
+        return montopendiente;
+    }
+
+    public void setMontopendiente(BigDecimal montopendiente) {
+        this.montopendiente = montopendiente;
+    }
+
+    public BigDecimal getMontomaxp() {
+        return montomaxp;
+    }
+
+    public void setMontomaxp(BigDecimal montomaxp) {
+        this.montomaxp = montomaxp;
+    }
+
+    public BigDecimal getMontominp() {
+        return montominp;
+    }
+
+    public void setMontominp(BigDecimal montominp) {
+        this.montominp = montominp;
+    }
+
+    public BigDecimal getMontoplanilla() {
+        return montoplanilla;
+    }
+
+    public void setMontoplanilla(BigDecimal montoplanilla) {
+        this.montoplanilla = montoplanilla;
+    }
+
+    public Date getFechapago() {
+        return fechapago;
+    }
+
+    public void setFechapago(Date fechapago) {
+        this.fechapago = fechapago;
+    }
+
+    public Date getFechaanticipo() {
+        return fechaanticipo;
+    }
+
+    public void setFechaanticipo(Date fechaanticipo) {
+        this.fechaanticipo = fechaanticipo;
     }
     
 }

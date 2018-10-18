@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="principal" onkeypress="if (event.keyCode === 13) { return false; }">
+    <p:growl id="msgs" showDetail="false" />
+ 
+    <p:fieldset style="margin-bottom:20px">
+        <h2 style="text-align: center">MODIFICACION DATOS DE ORDENES DE TRABAJO</h2>
+    </p:fieldset>
+    <p:fieldset legend="DATOS DE ORDEN DE TRABAJO" style="margin-bottom:20px">
+        <h:panelGrid columns="9" cellpadding="5">
+            <h:outputText value="Codigo Orden de Trabajo:"/>
+            <p:inputText id="codigo_ot" value="#{modificarOtController.ordentrabajo.codigo}" disabled="#{modificarOtController.disabledcodigo}" >
+                <f:ajax event="change" listener="#{modificarOtController.getOtseguncodigo}" render="@all" ></f:ajax>
+            </p:inputText>
+            <h:inputHidden id="codigoot" value="#{ingresootController.ordentrabajo.codigo}" />
+            <h:outputText value="Fecha Ingreso:"/>
+            <p:calendar id="fingreso" value="#{modificarOtController.ordentrabajo.fechaingreso}" pattern="dd-MM-yyy" disabled="true" locale="es"></p:calendar>
+            <h:inputHidden id="fechaingsave" value="#{modificarOtController.ordentrabajo.fechaingreso}" >
+                <f:convertDateTime dateStyle="long" pattern="dd-MM-yyyy"/>  
+            </h:inputHidden>
+            <p:spacer></p:spacer>
+            <h:outputText value="Fecha Autorizado:"/>
+            <p:calendar id="fautoriz" value="#{modificarOtController.ordentrabajo.fechaautorizado}" pattern="dd-MM-yyy" required="true" requiredMessage="Fecha de autorizacion es REQUERIDO" locale="es" readonlyInput="true">
+                <p:ajax event="dateSelect" listener="#{modificarOtController.actualizarCodigoOrden}" update="codigo_ot,codigoot" />
+            </p:calendar>
+        </h:panelGrid>
+    </p:fieldset>
+    
+    <p:fieldset legend="DATOS DEL CLIENTE" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="Nombre Cliente o Aseguradora:"/>
+            <p:selectOneMenu id="nombrecli" value="#{modificarOtController.aseguradoracliente.id}" style="width:250px" required="true" requiredMessage="Cliente es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Cliente/Aseguradora" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{modificarOtController.clientes}" var="micliente" itemLabel="#{micliente.nombrecliente}" itemValue="#{micliente.id}" />
+             </p:selectOneMenu>
+        </h:panelGrid>
+    </p:fieldset>
+ 
+     <p:fieldset legend="DATOS DEL VEHICULO" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="Placa:"/>  
+            <p:inputText id="placa" value="#{modificarOtController.ordentrabajo.placa}" required="true" requiredMessage="Falta ingresar Placa"> 
+            <p:ajax event="change" listener="#{modificarOtController.actualizarCodigoOrden}" update="codigo_ot,codigoot" /> 
+            </p:inputText>
+            
+            <h:outputText value="Marca:"/>
+            <p:selectOneMenu id="marca" value="#{modificarOtController.marca.id}" style="width:200px" required="true" requiredMessage="Marca de vehiculo es REQUERIDO"  >
+                    <f:selectItem itemLabel="Seleccione Marca" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{modificarOtController.marcas}" var="mimarca" itemLabel="#{mimarca.nombremarca}" itemValue="#{mimarca.id}" rendered="true"/>
+                    <f:ajax listener="#{modificarOtController.cambiarModelos}" render="modelo"/>
+            </p:selectOneMenu>
+            
+            <h:outputText value="Modelo:"/>
+            <p:selectOneMenu id="modelo" value="#{modificarOtController.modelo.id}" style="width:200px" required="true" requiredMessage="Modelo de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Modelo" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{modificarOtController.modelos}" var="mimodelo" itemLabel="#{mimodelo.nombremodelo}" itemValue="#{mimodelo.id}" />
+            </p:selectOneMenu>
+            
+            <h:outputText value="Color:"/>
+            <p:selectOneMenu id="color" value="#{modificarOtController.colorvehiculo.id}" style="width:200px" required="true" requiredMessage="Color de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Color" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{modificarOtController.colores}" var="micolor" itemLabel="#{micolor.color}" itemValue="#{micolor.id}" />
+            </p:selectOneMenu>
+            
+             <h:outputText value="Año:"/>
+             <p:selectOneMenu id="anio" value="#{modificarOtController.anio.id}" style="width:200px" required="true" requiredMessage="Año de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Año" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{modificarOtController.anios}" var="mianio" itemLabel="#{mianio.year}" itemValue="#{mianio.id}" />
+            </p:selectOneMenu>
+           
+        </h:panelGrid>
+    </p:fieldset>
+    <p:fieldset style="margin-bottom:20px">
+       <h:panelGrid columns="4" cellpadding="5">
+           <p:commandButton value="Modificar" id="guardar" update="principal" icon="ui-icon-disk" action="#{modificarOtController.actualizarOrden}" ajax="false"/>
+           <p:commandButton value="Cancelar" id="cancelar" action="#{modificarOtController.cancelarActualizacion()}" ajax="false" immediate="true" />
+       </h:panelGrid>
+    </p:fieldset>
+</h:form>        
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

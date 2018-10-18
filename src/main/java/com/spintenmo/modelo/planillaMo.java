@@ -14,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,22 +24,37 @@ import javax.persistence.Temporal;
 @Table(name="planillamo")
 public class planillaMo implements Serializable {
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_ORDENTRABAJO")
-    @SequenceGenerator(name="SEQ_ID_ORDENTRABAJO",sequenceName="seq_idordentrabajo", allocationSize=1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_PLANILLAMO")
+    @SequenceGenerator(name="SEQ_ID_PLANILLAMO",sequenceName="seq_idplanillamo", allocationSize=1)
     private int id;
-    @JoinColumn(name="idoperacionesot")
-    private operacionesOrdent operacionesordent;
+    @OneToOne
     @JoinColumn(name="idpersona")
     private empleadoMo empleadomo;
-    @Column(name="fechaplanilla")
+    @Column(name="finicio")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    private Date fechaplanilla;
-    @Column(name="montogravado")
-    private BigDecimal montogravado;
+    private Date finicio;
+    @Column(name="ffin")
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date ffin;
+    @Column(name="fpagado")
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date fpagado;
+    @Column(name="diaslab")
+    private BigDecimal diaslab;
+    @Column(name="montomototal")
+    private BigDecimal montomototal;
     @Column(name="renta")
     private BigDecimal renta;
-    @Column(name="montopagar")
+    @Column(name="montoapagar")
     private BigDecimal montoapagar;
+    @Column(name="sumadescuentos")
+    private BigDecimal sumadescuentos;
+    @Column(name="salariobase")
+    private BigDecimal salariobase;
+    @Column(name="subtotalgravado")
+    private BigDecimal subtotalgravado;
+    @Column(name="estado")
+    private String estado;
 
     public int getId() {
         return id;
@@ -45,14 +62,6 @@ public class planillaMo implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public operacionesOrdent getOperacionesordent() {
-        return operacionesordent;
-    }
-
-    public void setOperacionesordent(operacionesOrdent operacionesordent) {
-        this.operacionesordent = operacionesordent;
     }
 
     public empleadoMo getEmpleadomo() {
@@ -63,20 +72,44 @@ public class planillaMo implements Serializable {
         this.empleadomo = empleadomo;
     }
 
-    public Date getFechaplanilla() {
-        return fechaplanilla;
+    public Date getFinicio() {
+        return finicio;
     }
 
-    public void setFechaplanilla(Date fechaplanilla) {
-        this.fechaplanilla = fechaplanilla;
+    public void setFinicio(Date finicio) {
+        this.finicio = finicio;
     }
 
-    public BigDecimal getMontogravado() {
-        return montogravado;
+    public Date getFfin() {
+        return ffin;
     }
 
-    public void setMontogravado(BigDecimal montogravado) {
-        this.montogravado = montogravado;
+    public void setFfin(Date ffin) {
+        this.ffin = ffin;
+    }
+
+    public Date getFpagado() {
+        return fpagado;
+    }
+
+    public void setFpagado(Date fpagado) {
+        this.fpagado = fpagado;
+    }
+
+    public BigDecimal getDiaslab() {
+        return diaslab;
+    }
+
+    public void setDiaslab(BigDecimal diaslab) {
+        this.diaslab = diaslab;
+    }
+
+    public BigDecimal getMontomototal() {
+        return montomototal;
+    }
+
+    public void setMontomototal(BigDecimal montomototal) {
+        this.montomototal = montomototal;
     }
 
     public BigDecimal getRenta() {
@@ -94,6 +127,37 @@ public class planillaMo implements Serializable {
     public void setMontoapagar(BigDecimal montoapagar) {
         this.montoapagar = montoapagar;
     }
-      
+
+    public BigDecimal getSumadescuentos() {
+        return sumadescuentos;
+    }
+
+    public void setSumadescuentos(BigDecimal sumadescuentos) {
+        this.sumadescuentos = sumadescuentos;
+    }
+
+    public BigDecimal getSalariobase() {
+        return salariobase;
+    }
+
+    public void setSalariobase(BigDecimal salariobase) {
+        this.salariobase = salariobase;
+    }
+
+    public BigDecimal getSubtotalgravado() {
+        return subtotalgravado;
+    }
+
+    public void setSubtotalgravado(BigDecimal subtotalgravado) {
+        this.subtotalgravado = subtotalgravado;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
     
 }

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <body>
+
+<ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="principal">
+    <p:growl id="msgs" showDetail="false" />
+ 
+    <p:fieldset style="margin-bottom:20px">
+        <h2 style="text-align: center">ELIMINAR ORDEN DE TRABAJO</h2>
+    </p:fieldset>
+    <p:fieldset legend="DATOS DE ORDEN DE TRABAJO" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="Codigo Orden de Trabajo:"/>
+            <p:inputText id="codigo_ot" value="#{eliminarOtController.ordentrabajo.codigo}"  ></p:inputText>
+            
+        </h:panelGrid>
+    </p:fieldset>
+ 
+    <p:fieldset style="margin-bottom:20px">
+       <h:panelGrid columns="4" cellpadding="5">
+           <p:commandButton value="Eliminar" id="Eliminar" update="principal" icon="ui-icon-disk" action="#{eliminarOtController.eliminarOrden}" ajax="false" />
+       <p:commandButton value="Cancelar" id="cancelar" action="#{eliminarOtController.cancelar}" ajax="false" immediate="true" />
+       </h:panelGrid>
+    </p:fieldset>
+</h:form>        
+            </ui:define>
+
+</ui:composition>
+
+    </body>
+</html>
+

@@ -8,12 +8,14 @@ package com.spintenmo.modelo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,9 +24,10 @@ import javax.persistence.Temporal;
 @Table(name="anticipomo")
 public class anticipoMo implements Serializable{
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_PERSONA")
-    @SequenceGenerator(name="SEQ_ID_PERSONA",sequenceName="seq_idpersona", allocationSize=1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_ANTICIPOMO")
+    @SequenceGenerator(name="SEQ_ID_ANTICIPOMO",sequenceName="seq_idanticipomo", allocationSize=1)
     private int id;
+    @ManyToOne
     @JoinColumn(name="idoperacionesot")
     private operacionesOrdent operacionesordent;
     @Column(name="montoanticipo")

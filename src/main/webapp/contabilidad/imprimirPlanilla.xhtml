@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"          
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+     
+    </h:head>
+    <body>
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+            <ui:define name="content">
+    <h2>PLANILLA GENERADA</h2>            
+    <h:form id="form" >
+    <h:panelGrid id="grid-payment-table">        
+    <p:dataTable  id="tblgenerada" var="pgenerada" value="#{imprimirPlanillaController.consolidadoplanillagen}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" style="margin-bottom:20px;margin-left: 200px;margin-right: 200px" >
+        
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="cars" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
+            </h:commandLink>
+        </f:facet>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Fecha pago Planilla" />
+            </f:facet>
+            <h:outputText value="#{pgenerada[0]}">
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Total Planilla"/>
+            </f:facet>
+            <h:outputText value="#{pgenerada[1]}">
+                <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+             
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Opciones"/>
+            </f:facet>
+            <p:commandLink action="#{imprimirPlanillaController.verPlanillagenerada(actionEvent, pgenerada[0])}" ajax="false" target="_blank">
+                <h:outputText value="Imprimir"></h:outputText>
+            </p:commandLink>
+            <br></br>
+            <p:commandLink action="#{imprimirPlanillaController.verDetallegen(actionEvent, pgenerada[0])}">
+                <h:outputText value="Ver Detalle"/>
+            </p:commandLink>
+        </p:column>
+    </p:dataTable>
+    </h:panelGrid>
+
+    </h:form>
+    
+                <h2>PLANILLAS PAGADAS</h2>            
+    <h:form id="form2" >
+    <h:panelGrid id="grid-payment-table">        
+    <p:dataTable  id="tblgenerada" var="pgenerada" value="#{imprimirPlanillaController.consolidadoplanillapag}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" style="margin-bottom:20px;margin-left: 200px;margin-right: 200px" >
+        
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="cars" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="cars"/>
+            </h:commandLink>
+        </f:facet>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Fecha pago Planilla" />
+            </f:facet>
+            <h:outputText value="#{pgenerada[0]}">
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Total Planilla"/>
+            </f:facet>
+            <h:outputText value="#{pgenerada[1]}">
+                <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+             
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Opciones"/>
+            </f:facet>
+            <p:commandLink action="#{imprimirPlanillaController.verPlanillaPagada(actionEvent, pgenerada[0])}" ajax="false" >
+                <h:outputText value="Imprimir"></h:outputText>
+            </p:commandLink>
+            <br></br>
+            <p:commandLink action="#{imprimirPlanillaController.verDetalle(actionEvent, pgenerada[0])}">
+                <h:outputText value="Ver Detalle"/>
+            </p:commandLink>
+        </p:column>
+    </p:dataTable>
+    </h:panelGrid>
+
+    </h:form> 
+                        
+            </ui:define>
+            
+        </ui:composition>
+        
+    </body>
+</html>

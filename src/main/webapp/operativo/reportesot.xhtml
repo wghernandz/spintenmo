@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+                   <p:growl id="msgs" showDetail="true" />
+ 
+    <h3 style="margin-top:0">REPORTES ORDENES DE TRABAJO INGRESADAS</h3>
+    <p:tabView>
+        <p:tab title="POR FECHA">
+            <h:form>
+            <h:panelGrid columns="4" cellpadding="10">
+                <h:outputText value="Fecha Inicial:"></h:outputText>
+                <p:calendar id="fechainicio" value="#{fechainicio}" readonlyInput="true" required="true" pattern="dd-MM-yyyy">
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy"></f:convertDateTime>
+                </p:calendar>
+                <h:outputText value="Fecha Final:"></h:outputText>
+                <p:calendar id="fechafin" value="#{fechafin}" readonlyInput="true" required="true" pattern="dd-MM-yyyy" >
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy"></f:convertDateTime>
+                </p:calendar>
+                <p:commandLink id="obtener" value="GENERAR" 
+                 action="#{reportesotController.generarPorfecha(ActionEvent,fechainicio,fechafin)}" ajax="false" target="_blank"/>
+            </h:panelGrid>
+            </h:form>
+        </p:tab>
+        <p:tab title="POR PLACA">
+            <h:panelGrid columns="2" cellpadding="10">
+               
+            </h:panelGrid>
+        </p:tab>
+        <p:tab title="POR ASEGURADORA">
+            <h:panelGrid columns="2" cellpadding="10">
+                
+            </h:panelGrid>
+        </p:tab>
+    </p:tabView> 
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

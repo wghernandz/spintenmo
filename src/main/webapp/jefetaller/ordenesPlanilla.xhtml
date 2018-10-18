@@ -1,0 +1,342 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"          
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+    <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+            <ui:define name="content">
+    <h:form id="form" >
+        <h2>Operaciones de OT finalizadas</h2>
+        <p:dataTable id="tbl" var="orden" value="#{otapagarPlanilla.otpreplanilla}" sortBy="#{orden.empleadomo.persona.id}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 filteredValue="#{otapagarPlanilla.filteredOtpreplanilla}" paginator="true" rows="10" 
+                 emptyMessage="No Ordenes found with given criteria" style="margin-bottom:20px" >
+ 
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="ordenes-planilla" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="ordenes-planilla" options="#{otapagarPlanilla.pdfOpt}"/>
+            </h:commandLink>
+        </f:facet>
+            
+        <p:column filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Codigo Orden" />
+            </f:facet>  
+            <h:outputText value="#{orden.ordentrabajo.codigo}" />
+        </p:column>
+        
+        <p:column filterBy="#{orden.ordentrabajo.placa}" headerText="Placa" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Placa" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.placa}" />
+        </p:column>
+        
+         <p:column filterBy="#{orden.tipooperaciones}" headerText="Tipo operacion" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Tipo Operacion" />
+            </f:facet>
+            <h:outputText value="#{orden.tipooperaciones}" />
+        </p:column> 
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Estado" />
+            </f:facet>
+            <p:commandLink update=":formestado" oncomplete="PF('dlgestado').show();" action="#{otapagarPlanilla.setOperacionesordent(orden)}">
+                <h:outputText value="#{orden.estado}" />
+            </p:commandLink>
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Operario" />
+            </f:facet>
+            <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido}" > 
+            </h:outputText>
+        </p:column>
+                        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Fecha Autorizado" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.fechaautorizado}" >
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Aseguradora"/>
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Marca" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Modelo" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto MO" />
+            </f:facet>
+            <h:outputText value="#{orden.montomo}" >
+                <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+            </h:outputText>
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto Pendiente" />
+            </f:facet>
+            <h:outputText value="#{orden.montopendiente}" >
+                <f:convertNumber type="number" pattern="$ 0.00" />
+            </h:outputText>
+        </p:column>
+            
+        <p:summaryRow>       
+            <p:column colspan="10" style="text-align:right" >
+                <h:outputText value="Total:"/>
+                  #{otapagarPlanilla.acumulateValue(orden)}
+            </p:column>
+            <p:column>
+                 <h:outputText value="#{otapagarPlanilla.getAcumulatedValue()}">
+                    <f:convertNumber type="currency" currencySymbol="$" />
+                </h:outputText>
+            </p:column>
+        </p:summaryRow>
+    </p:dataTable>
+ 
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="ordenes-planilla" pageOnly="true"/>
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="ordenes-planilla" pageOnly="true" options="#{otapagarPlanilla.pdfOpt}"/>
+    </h:commandLink>
+    </h:form>
+    
+    <h:form id="form2" >
+        <h2>Anticipos a Operaciones de OT no finalizadas</h2>
+        <p:dataTable id="tbl" var="anticipo" value="#{otapagarPlanilla.anticipopreplanilla}" sortBy="#{anticipo.operacionesordent.empleadomo.persona.id}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 filteredValue="#{otapagarPlanilla.filteredAnticipopreplanilla}" paginator="true" rows="10" 
+                 emptyMessage="No Ordenes found with given criteria" style="margin-bottom:20px">
+ 
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                <p:dataExporter type="xls" target="tbl" fileName="anticipos-planilla" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                <p:dataExporter type="pdf" target="tbl" fileName="anticipos-planilla" options="#{otapagarPlanilla.pdfOpt}"/>
+            </h:commandLink>
+        </f:facet>
+            
+        <p:column filterBy="#{anticipo.operacionesordent.ordentrabajo.codigo}" headerText="Codigo" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Codigo Orden" />
+            </f:facet>  
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.codigo}" />
+        </p:column>
+            
+        <p:column filterBy="#{anticipo.operacionesordent.ordentrabajo.placa}" headerText="Placa" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Placa" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.placa}" />
+        </p:column>
+        
+        <p:column filterBy="#{anticipo.operacionesordent.tipooperaciones}" headerText="Tipo Operacion" filterMatchMode="contains">
+            <f:facet name="header">
+                <h:outputText value="Tipo Operacion" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.tipooperaciones}" />
+        </p:column> 
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Estado" />
+            </f:facet>
+            <p:commandLink update=":formestadoanticipo:detalle" oncomplete="PF('dlgestadoanticipo').show();" action="#{otapagarPlanilla.establecerOperacion(anticipo)}">
+            <h:outputText value="#{anticipo.operacionesordent.estado}" />
+            </p:commandLink>
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Operario" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.empleadomo.persona.primernombre} #{anticipo.operacionesordent.empleadomo.persona.segundonombre} #{anticipo.operacionesordent.empleadomo.persona.primerapellido} #{anticipo.operacionesordent.empleadomo.persona.segundoapellido}" > 
+            </h:outputText>
+        </p:column>
+                                  
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Fecha Autorizado" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.fechaautorizado}" >
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:column>
+ 
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Aseguradora"/>
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Marca" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.modelot.marca.nombremarca}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Modelo" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.modelot.nombremodelo}" />
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto MO" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.montomo}" >
+                <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+        
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto Pendiente" />
+            </f:facet>
+            <h:outputText value="#{anticipo.operacionesordent.montopendiente}">
+                <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+        </p:column>
+            
+        <p:column>
+            <f:facet name="header">
+                <h:outputText value="Monto Anticipo" />
+            </f:facet>
+            <p:commandLink update=":formAnticipomo" oncomplete="PF('dlganticipo').show();" action="#{otapagarPlanilla.setAnticipomo(anticipo)}">
+             #{otapagarPlanilla.acumulateValueAnt(anticipo)}
+            <h:outputText value="#{anticipo.montoanticipo}" >
+                <f:convertNumber type="number" pattern="$ 0.00"/>
+            </h:outputText>
+            </p:commandLink>
+        </p:column>
+            
+        <p:summaryRow >
+            <p:column colspan="11" style="text-align:right">
+                <h:outputText value="Total:" />
+            </p:column>
+            <p:column >
+                <h:outputText value="#{otapagarPlanilla.acumulatedValueAnt}">
+                    <f:convertNumber type="currency" currencySymbol="$" />
+                </h:outputText>
+            </p:column>
+        </p:summaryRow>
+        
+    </p:dataTable>
+ 
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="anticipos-planilla" pageOnly="true"/>
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="anticipos-planilla" pageOnly="true" options="#{otapagarPlanilla.pdfOpt}" />
+    </h:commandLink>
+    </h:form>
+            <p:dialog header="Modificar Anticipo de Mano de Obra" id="modanticipo" widgetVar="dlganticipo" showEffect="explode" hideEffect="bounce" height="100" width="350" closable="false">
+                    <h:form id="formAnticipomo">
+                        <h:panelGrid columns="4" cellpadding="3">
+                            <h:outputText value="Anticipo MO:"/>
+                            <p:inputNumber decimalPlaces="2" value="#{otapagarPlanilla.anticipomo.montoanticipo}" maxValue="#{otapagarPlanilla.anticipomo.operacionesordent.montopendiente}"></p:inputNumber>
+                          <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{otapagarPlanilla.modificarAnticipomo()}" update=":form" oncomplete="PF('dlganticipo').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlganticipo.hide();" immediate="true" update="modanticipo"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+            </p:dialog>
+            
+            <p:dialog header="Cambiar Estado" id="modestado" widgetVar="dlgestado" showEffect="explode" hideEffect="bounce" height="100" width="350" closable="false">
+                    <h:form id="formestado">
+                        <h:panelGrid columns="4" cellpadding="3">
+                            <h:outputText value="Cambiar a Estado:"/>
+               
+                            <p:selectOneMenu id="cambestado" value="#{otapagarPlanilla.operacionesordent.estado}" style="width:200px" required="true" >
+                                <f:selectItem itemLabel="#{otapagarPlanilla.valorestado}" itemValue="#{otapagarPlanilla.valorestado}" />
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{otapagarPlanilla.cambiarEstado()}" update=":form" oncomplete="PF('dlgestado').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlgestado.hide();" immediate="true" update="modestado"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+            </p:dialog>
+                
+            <p:dialog header="Cambiar Estado" id="modestadoanticipo" widgetVar="dlgestadoanticipo" showEffect="explode" hideEffect="bounce" height="100" width="350" closable="false">
+                    <h:form id="formestadoanticipo">
+                        <h:panelGrid columns="4" cellpadding="3" id="detalle">
+                            <h:outputText value="Cambiar a Estado:"/>
+               
+                            <p:selectOneMenu id="cambestadoanticipo" value="#{otapagarPlanilla.operacionesordent.estado}" style="width:200px" required="true" >
+                                <f:selectItem itemLabel="#{otapagarPlanilla.valorestado}" itemValue="#{otapagarPlanilla.valorestado}" />
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{otapagarPlanilla.cambiarEstadoAnticipo()}" update=":form" oncomplete="PF('dlgestadoanticipo').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlgestado.hide();" immediate="true" update="modestadoanticipo"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+            </p:dialog> 
+                
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -22,7 +23,8 @@ public class Modelo implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_MODELO")
     @SequenceGenerator(name="SEQ_ID_MODELO",sequenceName="seq_idmodelo", allocationSize=1)
     private int Id;
-    @JoinColumn(name="marca")
+    @ManyToOne
+    @JoinColumn(name="idmarca")
     private Marca marca;
     @Column(name="nombremodelo")
     private String nombremodelo;

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 public class Departamento implements Serializable{
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_DEPARTAMENTO")
-    @SequenceGenerator(name="SEQ_ID_DEPARTAMENTO",sequenceName="seq_iddepartamento", allocationSize=1)
+    @SequenceGenerator(name="SEQ_ID_DEPARTAMENTO",sequenceName="seq_iddepto", allocationSize=1)
     private int id;
     @Column(name="nombredepto")
     private String nombredepto;

@@ -1,0 +1,89 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="principal">
+    <p:growl id="msgs" showDetail="false" />
+ 
+    <p:fieldset style="margin-bottom:20px">
+        <h2 style="text-align: center">MANTENIMIENTO OPERARIOS</h2>
+    </p:fieldset>
+    <p:fieldset id="datosemp" legend="DATOS DE EMPLEADO" style="margin-bottom:20px" >
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="DUI:"/>
+            <p:inputMask mask="99999999-9" id="dui" value="#{ingresoOperariosController.persona.pdui}" required="true" requiredMessage="DUI Requerido" disabled="#{ingresoOperariosController.desactivar}">
+                <p:ajax event="change" listener="#{ingresoOperariosController.verificarOperario()}" update="principal"></p:ajax>
+            </p:inputMask>
+            <h:outputText value="NIT:"/>
+            <p:inputMask mask="9999-999999-999-9" id="nit" value="#{ingresoOperariosController.persona.pnit}" />
+            <h:outputText value="Primer Nombre"/>
+            <p:inputText id="primernombre" value="#{ingresoOperariosController.persona.primernombre}" required="true" requiredMessage="Primer nombre Requerido"/> 
+            <h:outputText value="Segundo Nombre"/>
+            <p:inputText id="segnombre" value="#{ingresoOperariosController.persona.segundonombre}" /> 
+            <h:outputText value="Primer Apellido"/>
+            <p:inputText id="primerapellido" value="#{ingresoOperariosController.persona.primerapellido}" required="true" requiredMessage="Primer apellido Requerido"/>
+            <h:outputText value="Segundo Apellido" />
+            <p:inputText id="segapellido" value="#{ingresoOperariosController.persona.segundoapellido}"/> 
+            <h:outputText value="Telefono"/>
+            <p:inputMask mask="9999-9999" value="#{ingresoOperariosController.persona.ptelefono1}"/>
+            <h:outputText value="Direccion"/>
+            <p:inputText value="#{ingresoOperariosController.persona.direccion}"/>
+            <h:outputText value="Departamento"/>
+            <p:selectOneMenu value="#{ingresoOperariosController.departamento.id}" required="true" requiredMessage="Departamento requerido">
+               <f:selectItem itemLabel="Seleccione Departamento" itemValue="" noSelectionOption="true" />
+               <f:selectItems value="#{ingresoOperariosController.departamentos}" var="depto" itemLabel="#{depto.nombredepto}" itemValue="#{depto.id}"></f:selectItems>
+               <f:ajax listener="#{ingresoOperariosController.cambiarMuni()}" render="munic"/>
+            </p:selectOneMenu>
+            <h:outputText value="Municipio"/>
+            <p:selectOneMenu id="munic" value="#{ingresoOperariosController.municipio.id}" required="true" requiredMessage="Municipio requerido">
+               <f:selectItem itemLabel="Seleccione Municipio" itemValue="" noSelectionOption="true" />
+               <f:selectItems value="#{ingresoOperariosController.municipios}" var="muni" itemLabel="#{muni.nombremunicipio}" itemValue="#{muni.id}"></f:selectItems>
+            </p:selectOneMenu>
+            
+            <h:outputText value="Email" />
+            <p:inputText value="#{ingresoOperariosController.persona.email}"/>
+            <h:outputText value="Fecha de Ingreso" />
+            <p:calendar value="#{ingresoOperariosController.persona.fechaingreso}" required="true" requiredMessage="Fecha ingreso requerido" readonlyInput="true" locale="es"></p:calendar>
+        </h:panelGrid>
+    </p:fieldset>
+    
+    <p:fieldset id="datoscar" legend="DATOS DE CARGO" style="margin-bottom:20px">
+        <h:panelGrid columns="6" cellpadding="5">
+            <h:outputText value="Cargo:"/>
+            <p:selectOneMenu id="cargo" value="#{ingresoOperariosController.empleadomo.cargo}" required="true" requiredMessage="Cargo Requerido">
+                <f:selectItem itemLabel="Seleccione Cargo" itemValue="" noSelectionOption="true"/>
+                <f:selectItem itemLabel="Enderezador de vehiculos" itemValue="Enderezador de vehiculos"/>
+                <f:selectItem itemLabel="Pintor de vehiculos" itemValue="Pintor de vehiculos"/>
+            </p:selectOneMenu>
+            <h:outputText value="Salario Base $"/>
+            <p:inputNumber decimalPlaces="2" required="true" requiredMessage="Salario base Requerido"
+                           value="#{ingresoOperariosController.empleadomo.salariobase}" minValue="0.00" maxValue="450.00"  />
+        </h:panelGrid>
+    </p:fieldset>
+    <p:fieldset style="margin-bottom:20px">
+       <h:panelGrid id="paraguardar" columns="4" cellpadding="5">
+        <p:commandButton value="Guardar" id="guardar" update="principal" icon="ui-icon-disk"
+                         action="#{ingresoOperariosController.guardarOperario}" ajax="false" disabled="#{ingresoOperariosController.desactivar}"/>
+       <p:commandButton value="Eliminar" id="eliminar" update="principal" icon="ui-icon-disk"
+                         action="#{ingresoOperariosController.eliminarOperario}" ajax="false" disabled="#{ingresoOperariosController.desactivar}"/>       
+        <p:commandButton value="Nuevo" id="nuevo" action="#{ingresoOperariosController.nuevo()}" ajax="false" immediate="true" />
+        </h:panelGrid>
+      
+    </p:fieldset>
+</h:form>        
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -7,14 +7,17 @@ package com.spintenmo.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 
 @Entity
 @Table(name="ordentrabajo")
@@ -23,31 +26,33 @@ public class ordenTrabajo implements Serializable {
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_ORDENTRABAJO")
     @SequenceGenerator(name="SEQ_ID_ORDENTRABAJO",sequenceName="seq_idordentrabajo", allocationSize=1)
     private int id;
+    @OneToOne
     @JoinColumn(name="idcliente")
     private aseguradoraCliente aseguradoracliente;
+    @OneToOne
     @JoinColumn(name="idmodelo")
     private Modelo modelot;
+    @OneToOne
     @JoinColumn(name="idanio")
     private Anio aniot;
-    @Column(name="marca")
-    private String marca;
-    @Column(name="modelo")
-    private String modelo;
     @Column(name="placa")
     private String placa;
-    @Column(name="anio")
-    private String anio;
-    @Column(name="color")
-    private String color;
-    @Column(name="aseguradora")
-    private String aseguradora;
+    @Temporal(javax.persistence.TemporalType.DATE)
     @Column(name="fechaautorizado")
     private Date fechaautorizado;
     @Column(name="esreclamo")
     private String esreclamo;
+    @OneToOne
     @JoinColumn(name="idcolor")
     private colorVehiculo colorvehiculo; 
-
+    @Column(name="codigo")
+    private String codigo;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="fechaingreso")
+    private Date fechaingreso;
+    @Column(name="estado")
+    private String estado;
+    
     public int getId() {
         return id;
     }
@@ -80,52 +85,12 @@ public class ordenTrabajo implements Serializable {
         this.aniot = aniot;
     }
 
-    public String getMarca() {
-        return marca;
-    }
-
-    public void setMarca(String marca) {
-        this.marca = marca;
-    }
-
-    public String getModelo() {
-        return modelo;
-    }
-
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
-    }
-
     public String getPlaca() {
         return placa;
     }
 
     public void setPlaca(String placa) {
         this.placa = placa;
-    }
-
-    public String getAnio() {
-        return anio;
-    }
-
-    public void setAnio(String anio) {
-        this.anio = anio;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public String getAseguradora() {
-        return aseguradora;
-    }
-
-    public void setAseguradora(String aseguradora) {
-        this.aseguradora = aseguradora;
     }
 
     public Date getFechaautorizado() {
@@ -151,6 +116,28 @@ public class ordenTrabajo implements Serializable {
     public void setColorvehiculo(colorVehiculo colorvehiculo) {
         this.colorvehiculo = colorvehiculo;
     }
-    
-    
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public Date getFechaingreso() {
+        return fechaingreso;
+    }
+
+    public void setFechaingreso(Date fechaingreso) {
+        this.fechaingreso = fechaingreso;
+    } 
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 }

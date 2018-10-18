@@ -7,14 +7,19 @@ package com.spintenmo.modelo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="empleadomo")
 public class empleadoMo implements Serializable{
+    @Id
+    @OneToOne
     @JoinColumn(name="idpersona")
     private Persona persona;
     @Column(name="cargo")
@@ -45,6 +50,5 @@ public class empleadoMo implements Serializable{
     public void setSalariobase(BigDecimal salariobase) {
         this.salariobase = salariobase;
     }
-    
-    
+     
 }

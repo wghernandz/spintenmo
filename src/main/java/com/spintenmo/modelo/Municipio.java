@@ -6,12 +6,14 @@
 package com.spintenmo.modelo;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -22,6 +24,7 @@ public class Municipio implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_MUNICIPIO")
     @SequenceGenerator(name="SEQ_ID_MUNICIPIO",sequenceName="seq_idmunicipio", allocationSize=1)
     private int id;
+    @ManyToOne
     @JoinColumn(name="iddepto")
     private Departamento departamento;
     @Column(name="nombremunicipio")

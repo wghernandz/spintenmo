@@ -7,12 +7,14 @@ package com.spintenmo.modelo;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -24,6 +26,7 @@ public class Persona implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_PERSONA")
     @SequenceGenerator(name="SEQ_ID_PERSONA",sequenceName="seq_idpersona", allocationSize=1)
     private int id;
+    @OneToOne
     @JoinColumn(name="idmunicipio")
     private Municipio municipio;
     @Column(name="primernombre")
@@ -153,7 +156,5 @@ public class Persona implements Serializable{
     public void setEmail(String email) {
         this.email = email;
     }
-  
-    
     
 }

@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+<h:form id="principal">
+    <p:growl id="msgs" showDetail="false" />
+ 
+    <p:fieldset style="margin-bottom:20px">
+        <h2 style="text-align: center">INGRESO A PLANILLA DE ORDENES DE TRABAJO</h2>
+    </p:fieldset>
+    <p:fieldset legend="DATOS DE ORDEN DE TRABAJO" style="margin-bottom:20px">
+        <h:panelGrid columns="9" cellpadding="5">
+            <h:outputText value="Fecha Ingreso:"/>
+            <p:calendar id="fingreso" value="#{ingresootController.ordentrabajo.fechaingreso}" pattern="dd-MM-yyy" disabled="true" locale="es" ></p:calendar>
+            <h:inputHidden id="fechaingsave" value="#{ingresootController.ordentrabajo.fechaingreso}" >
+                <f:convertDateTime dateStyle="long" pattern="dd-MM-yyyy"/>  
+            </h:inputHidden>
+            <p:spacer></p:spacer>
+            <h:outputText value="Fecha Autorizado:"/>
+            <p:calendar id="fautoriz" value="#{ingresootController.ordentrabajo.fechaautorizado}" pattern="dd-MM-yyy" readonlyInput="true" 
+                        required="true" requiredMessage="Fecha de autorizacion es REQUERIDO" locale="es">
+                <p:ajax event="dateSelect" listener="#{ingresootController.asignarCodigoOt()}" update="codigo_ot,codigoot" >
+                </p:ajax>
+            </p:calendar>
+    
+            <h:outputText value="Codigo Orden de Trabajo:"/>
+            <p:inputText id="codigo_ot" value="#{ingresootController.ordentrabajo.codigo}" disabled="true" ></p:inputText>
+            <h:inputHidden id="codigoot" value="#{ingresootController.ordentrabajo.codigo}" />
+        </h:panelGrid>
+    </p:fieldset>
+    
+    <p:fieldset legend="DATOS DEL CLIENTE" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="Nombre Cliente o Aseguradora:"/>
+            <p:selectOneMenu id="nombrecli" value="#{ingresootController.aseguradoracliente.id}" style="width:250px" required="true" requiredMessage="Cliente es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Cliente/Aseguradora" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresootController.clientes}" var="micliente" itemLabel="#{micliente.nombrecliente}" itemValue="#{micliente.id}" />
+             </p:selectOneMenu>
+        </h:panelGrid>
+    </p:fieldset>
+ 
+     <p:fieldset legend="DATOS DEL VEHICULO" style="margin-bottom:20px">
+        <h:panelGrid columns="8" cellpadding="5">
+            <h:outputText value="Placa:"/>  
+            <p:inputText id="placa" value="#{ingresootController.ordentrabajo.placa}" required="true" requiredMessage="Falta ingresar Placa"> 
+                <p:ajax event="keyup" listener="#{ingresootController.asignarCodigoOt}" update="codigo_ot,codigoot" /></p:inputText>
+            
+            <h:outputText value="Marca:"/>
+            <p:selectOneMenu id="marca" value="#{ingresootController.marca.id}" style="width:200px" required="true" requiredMessage="Marca de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Marca" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresootController.marcas}" var="mimarca" itemLabel="#{mimarca.nombremarca}" itemValue="#{mimarca.id}" />
+                    <f:ajax listener="#{ingresootController.cambiarModelos}" render="modelo"/>
+            </p:selectOneMenu>
+            
+            <h:outputText value="Modelo:"/>
+            <p:selectOneMenu id="modelo" value="#{ingresootController.modelo.id}" style="width:200px" required="true" requiredMessage="Modelo de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Modelo" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresootController.modelos}" var="mimodelo" itemLabel="#{mimodelo.nombremodelo}" itemValue="#{mimodelo.id}" />
+            </p:selectOneMenu>
+            
+            <h:outputText value="Color:"/>
+            <p:selectOneMenu id="color" value="#{ingresootController.colorvehiculo.id}" style="width:200px" required="true" requiredMessage="Color de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Color" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresootController.colores}" var="micolor" itemLabel="#{micolor.color}" itemValue="#{micolor.id}" />
+            </p:selectOneMenu>
+            
+             <h:outputText value="Año:"/>
+             <p:selectOneMenu id="anio" value="#{ingresootController.anio.id}" style="width:200px" required="true" requiredMessage="Año de vehiculo es REQUERIDO">
+                    <f:selectItem itemLabel="Seleccione Año" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{ingresootController.anios}" var="mianio" itemLabel="#{mianio.year}" itemValue="#{mianio.id}" />
+            </p:selectOneMenu>
+           
+        </h:panelGrid>
+    </p:fieldset>
+    <p:fieldset style="margin-bottom:20px">
+       <h:panelGrid columns="4" cellpadding="5">
+       <p:commandButton value="Guardar" id="guardar" update="principal,repeat" icon="ui-icon-disk" action="#{ingresootController.registrarOrden()}" ajax="false"/>
+       <p:commandButton value="Cancelar" id="cancelar" action="#{ingresootController.cancelar()}" ajax="false" immediate="true" />
+       </h:panelGrid>
+    </p:fieldset>
+</h:form>
+                <h:form id="repeat">
+                    
+                <h:panelGrid columns="1" columnClasses="label, value">
+                    <h3>ULTIMAS ORDENES INGRESADAS</h3>
+                    <p:dataTable var="ult" value="#{ingresootController.ultimasordenes}">
+                        <p:column headerText="Fecha de Ingreso">
+                            <h:outputText value="#{ult.fechaingreso}" >
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy"></f:convertDateTime>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Codigo Orden">
+                            <h:outputText value="#{ult.codigo}" />
+                        </p:column>
+ 
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{ult.placa}" />
+                        </p:column>
+ 
+                        <p:column headerText="Aseguradora">
+                            <h:outputText value="#{ult.aseguradoracliente.nombrecliente}" >
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Autorizado">
+                            <h:outputText value="#{ult.fechaautorizado}" >
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy"></f:convertDateTime>
+                            </h:outputText>
+                        </p:column>
+                        
+                    </p:dataTable> 
+                </h:panelGrid>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

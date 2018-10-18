@@ -21,8 +21,8 @@ public class Anio implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="SEQ_ID_ANIO")
     @SequenceGenerator(name="SEQ_ID_ANIO",sequenceName="seq_idanio", allocationSize=1)
     private int id;
-    @Column(name="anio")
-    private String anio;
+    @Column(name="year")
+    private String year;
 
     public int getId() {
         return id;
@@ -32,12 +32,13 @@ public class Anio implements Serializable{
         this.id = id;
     }
 
-    public String getAnio() {
-        return anio;
+    public String getYear() {
+        return year;
     }
 
-    public void setAnio(String anio) {
-        this.anio = anio;
+    public void setYear(String year) {
+        this.year = year;
     }
+
     
 }
