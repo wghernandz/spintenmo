@@ -175,4 +175,33 @@ public class ordenTrabajoFacade extends AbstractFacade<ordenTrabajo> implements 
       } 
     }
     
+    //Obtener OT segun codigo y ultima fecha de autorizado
+    @Override
+    public ordenTrabajo otPlacafechautoriz(String placa){
+        ordenTrabajo ot = new ordenTrabajo();
+        List<ordenTrabajo> lista = null;
+        String consulta;
+        
+        try{
+            consulta="select ot from ordenTrabajo ot " +
+                        "where ot.placa = ?1 and " +
+                        "ot.fechaautorizado=(select max(o.fechaautorizado) " +
+                        "from ordenTrabajo o where o.placa = ?1) order by ot.id desc";
+            Query query=em.createQuery(consulta);
+            query.setParameter(1,placa);
+            lista=query.getResultList();
+            
+            if(!lista.isEmpty()){
+                ot=lista.get(0);
+            }else{
+                ot=null;
+            }
+            
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+        return ot;
+    }
+    
 }

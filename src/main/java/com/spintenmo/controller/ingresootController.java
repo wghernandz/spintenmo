@@ -283,14 +283,26 @@ public class ingresootController implements Serializable {
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         codigoot=df.format(ordentrabajo.getFechaautorizado());
         codigoot=ordentrabajo.getPlaca()+"-"+codigoot;
-        ordentrabajo.setCodigo(codigoot); 
+        ordentrabajo.setCodigo(codigoot);
     }
     
     public String registrarOrden(){
+       //Dependiendo del tipo de orden, el codigo debe ser diferente, algunos campos pueden ir null, etc.
+        
        try{
+           //verificar colorvehiculo y anio
+           if(this.colorvehiculo.getId()!=0){
+               this.ordentrabajo.setColorvehiculo(colorvehiculo);
+                }else
+                    {
+                    this.ordentrabajo.setColorvehiculo(null);
+                    }
+           if(this.anio.getId()!=0){
+                this.ordentrabajo.setAniot(anio);
+                }else{
+                    this.ordentrabajo.setAniot(null);
+                }
             this.ordentrabajo.setAseguradoracliente(aseguradoracliente);
-            this.ordentrabajo.setColorvehiculo(colorvehiculo);
-            this.ordentrabajo.setAniot(anio);
             this.ordentrabajo.setModelot(modelo);
             this.ordentrabajo.setEsreclamo("No");
             this.ordentrabajo.setEstado("Costo no asignado");
@@ -324,8 +336,41 @@ public class ingresootController implements Serializable {
     }
     
     public void cambiarModelos(){
-        modelos=marcaEJB.modelosXmarca(marca);
-        
+        modelos=marcaEJB.modelosXmarca(marca);   
+    }
+    
+    public void notificarIngresoplaca(){
+        String bplaca="";
+        Date fechai=null;
+        String fechais="";
+        //Notificar al usuario si ya existe un registro previo de la placa a ingresar.
+        if(ordentrabajo.getPlaca()!=null){
+            System.out.println("placa1"+ordenTrabajoEJB.otPlacafechautoriz(ordentrabajo.getPlaca()));
+            if(ordenTrabajoEJB.otPlacafechautoriz(ordentrabajo.getPlaca())!=null){
+                bplaca=ordenTrabajoEJB.otPlacafechautoriz(ordentrabajo.getPlaca()).getPlaca();
+                System.out.println("PLACA"+bplaca);
+                fechai=ordenTrabajoEJB.otPlacafechautoriz(ordentrabajo.getPlaca()).getFechaautorizado();
+                SimpleDateFormat forma= new SimpleDateFormat("dd-MM-yyyy");
+                fechais=forma.format(fechai);
+            }
+        }    
+                if (!"".equals(bplaca)){
+                    FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage("El ultimo registro para la placa "+bplaca+" tiene fecha autorizado "+fechais));
+                    
+                      FacesContext.getCurrentInstance()
+                      .getExternalContext()
+                      .getFlash().setKeepMessages(true);
+                    }
+                else{
+                    FacesContext.getCurrentInstance().addMessage(
+                    null, new FacesMessage("No existen registros para la placa "+bplaca));
+                    
+                      FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .getFlash().setKeepMessages(true);
+                }
+                
     }
     
 }

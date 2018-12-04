@@ -52,6 +52,8 @@ public class ordenTrabajo implements Serializable {
     private Date fechaingreso;
     @Column(name="estado")
     private String estado;
+    @Column(name="tipoorden")
+    private int tipoorden;
     
     public int getId() {
         return id;
@@ -140,4 +142,13 @@ public class ordenTrabajo implements Serializable {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+
+    public int getTipoorden() {
+        return tipoorden;
+    }
+
+    public void setTipoorden(int tipoorden) {
+        this.tipoorden = tipoorden;
+    }
+    
 }

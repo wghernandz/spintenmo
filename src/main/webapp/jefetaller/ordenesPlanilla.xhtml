@@ -26,6 +26,7 @@
                 <p:graphicImage name="/imagenes/pdf.png" width="24"/>
                 <p:dataExporter type="pdf" target="tbl" fileName="ordenes-planilla" options="#{otapagarPlanilla.pdfOpt}"/>
             </h:commandLink>
+            
         </f:facet>
             
         <p:column filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" filterMatchMode="contains">

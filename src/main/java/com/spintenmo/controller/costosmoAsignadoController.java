@@ -165,4 +165,5 @@ public class costosmoAsignadoController implements Serializable {
         pdfOpt.setFacetFontSize("10");
     }
    
+        
 }

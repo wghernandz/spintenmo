@@ -128,6 +128,7 @@ public class imprimirPlanillaController implements Serializable {
         
         HashMap params = new HashMap();
         params.put("descuentos",descuentosemp);
+        params.put("imgdir","\\src\\main\\webapp\\reportes\\");//ruta imagen
         
         
         byte[] bytes=JasperRunManager.runReportToPdf(jasper.getPath(),params,new JRBeanCollectionDataSource(planillagenerada,false));
@@ -158,8 +159,9 @@ public class imprimirPlanillaController implements Serializable {
         
         HashMap params = new HashMap();
         params.put("descuentos",descuentosemp);
+        params.put("imgdir","\\src\\main\\webapp\\reportes\\");//ruta imagen
         
-        
+      
         byte[] bytes=JasperRunManager.runReportToPdf(jasper.getPath(),params,new JRBeanCollectionDataSource(planillagenerada,false));
         
         

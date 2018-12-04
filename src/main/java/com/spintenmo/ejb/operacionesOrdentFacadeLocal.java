@@ -58,5 +58,9 @@ public interface operacionesOrdentFacadeLocal {
     List<operacionesOrdent> otXfecha(Date finicial, Date ffinal);
     
     List<operacionesOrdent> optSegunModelo(int idmodelo, String estado);
+    
+    List<operacionesOrdent> otEstado(String estado);
+    
+    void finalizarTodo();
    
 }

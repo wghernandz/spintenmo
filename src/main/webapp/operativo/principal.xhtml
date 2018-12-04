@@ -37,6 +37,14 @@
             <p:inputText id="codigo_ot" value="#{ingresootController.ordentrabajo.codigo}" disabled="true" ></p:inputText>
             <h:inputHidden id="codigoot" value="#{ingresootController.ordentrabajo.codigo}" />
         </h:panelGrid>
+        <h:panelGrid columns="4">
+            <h:outputText value="Tipo de Ingreso:" />
+            <p:selectOneRadio id="console" value="#{ingresootController.ordentrabajo.tipoorden}" style="width: 600px">
+                <f:selectItem itemLabel="Ingreso de Orden" itemValue="0"  />
+                <f:selectItem itemLabel="Complemento de Orden" itemValue="1" />
+                <f:selectItem itemLabel="Trabajo Externo" itemValue="2" />
+            </p:selectOneRadio>
+        </h:panelGrid>
     </p:fieldset>
     
     <p:fieldset legend="DATOS DEL CLIENTE" style="margin-bottom:20px">
@@ -53,7 +61,9 @@
         <h:panelGrid columns="8" cellpadding="5">
             <h:outputText value="Placa:"/>  
             <p:inputText id="placa" value="#{ingresootController.ordentrabajo.placa}" required="true" requiredMessage="Falta ingresar Placa"> 
-                <p:ajax event="keyup" listener="#{ingresootController.asignarCodigoOt}" update="codigo_ot,codigoot" /></p:inputText>
+                <p:ajax event="keyup" listener="#{ingresootController.asignarCodigoOt}" update="codigo_ot,codigoot" />
+                <p:ajax event="change" listener="#{ingresootController.notificarIngresoplaca()}" update="msgs"/>
+            </p:inputText>
             
             <h:outputText value="Marca:"/>
             <p:selectOneMenu id="marca" value="#{ingresootController.marca.id}" style="width:200px" required="true" requiredMessage="Marca de vehiculo es REQUERIDO">
@@ -69,17 +79,15 @@
             </p:selectOneMenu>
             
             <h:outputText value="Color:"/>
-            <p:selectOneMenu id="color" value="#{ingresootController.colorvehiculo.id}" style="width:200px" required="true" requiredMessage="Color de vehiculo es REQUERIDO">
+            <p:selectOneMenu id="color" value="#{ingresootController.colorvehiculo.id}" style="width:200px">
                     <f:selectItem itemLabel="Seleccione Color" itemValue="" noSelectionOption="true" />
                     <f:selectItems value="#{ingresootController.colores}" var="micolor" itemLabel="#{micolor.color}" itemValue="#{micolor.id}" />
             </p:selectOneMenu>
-            
-             <h:outputText value="Año:"/>
-             <p:selectOneMenu id="anio" value="#{ingresootController.anio.id}" style="width:200px" required="true" requiredMessage="Año de vehiculo es REQUERIDO">
+            <h:outputText value="Año:"/>
+            <p:selectOneMenu id="anio" value="#{ingresootController.anio.id}" style="width:170px">
                     <f:selectItem itemLabel="Seleccione Año" itemValue="" noSelectionOption="true" />
                     <f:selectItems value="#{ingresootController.anios}" var="mianio" itemLabel="#{mianio.year}" itemValue="#{mianio.id}" />
-            </p:selectOneMenu>
-           
+            </p:selectOneMenu>    
         </h:panelGrid>
     </p:fieldset>
     <p:fieldset style="margin-bottom:20px">
@@ -89,8 +97,7 @@
        </h:panelGrid>
     </p:fieldset>
 </h:form>
-                <h:form id="repeat">
-                    
+            <h:form id="repeat">        
                 <h:panelGrid columns="1" columnClasses="label, value">
                     <h3>ULTIMAS ORDENES INGRESADAS</h3>
                     <p:dataTable var="ult" value="#{ingresootController.ultimasordenes}">
@@ -121,7 +128,8 @@
                         
                     </p:dataTable> 
                 </h:panelGrid>
-                </h:form>
+            </h:form>               
+                
             </ui:define>
 
         </ui:composition>

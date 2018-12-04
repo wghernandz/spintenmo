@@ -69,13 +69,13 @@
             </p:selectOneMenu>
             
             <h:outputText value="Color:"/>
-            <p:selectOneMenu id="color" value="#{modificarOtController.colorvehiculo.id}" style="width:200px" required="true" requiredMessage="Color de vehiculo es REQUERIDO">
+            <p:selectOneMenu id="color" value="#{modificarOtController.colorvehiculo.id}" style="width:200px" >
                     <f:selectItem itemLabel="Seleccione Color" itemValue="" noSelectionOption="true" />
                     <f:selectItems value="#{modificarOtController.colores}" var="micolor" itemLabel="#{micolor.color}" itemValue="#{micolor.id}" />
             </p:selectOneMenu>
             
              <h:outputText value="Año:"/>
-             <p:selectOneMenu id="anio" value="#{modificarOtController.anio.id}" style="width:200px" required="true" requiredMessage="Año de vehiculo es REQUERIDO">
+             <p:selectOneMenu id="anio" value="#{modificarOtController.anio.id}" style="width:200px" >
                     <f:selectItem itemLabel="Seleccione Año" itemValue="" noSelectionOption="true" />
                     <f:selectItems value="#{modificarOtController.anios}" var="mianio" itemLabel="#{mianio.year}" itemValue="#{mianio.id}" />
             </p:selectOneMenu>

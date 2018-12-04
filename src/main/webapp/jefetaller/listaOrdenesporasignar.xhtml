@@ -142,24 +142,28 @@
                 <h:inputText id="vmaximo" value="#{(otPorasignarController.operacionesordent.montomax) == null ? otPorasignarController.operacionesordent.montomaxp : otPorasignarController.operacionesordent.montomax  }" disabled="true">
                 <f:convertNumber type="decimal" pattern="$ 0.00"/>
                 </h:inputText>
+                <p:selectBooleanCheckbox value="#{otPorasignarController.noaplica}" onchange="#{otPorasignarController.setNoaplica(noaplica)}" >
+                    NO APLICA
+                    <p:ajax event="change" update="costosp"/>
+                </p:selectBooleanCheckbox>
                 </h:panelGrid>
                 
                 <h:outputText value="ASIGNACION OPERARIO"/>
                 
-                <h:panelGrid id="costosp" columns="4" cellpadding="3">
-                <h:outputText value="Seleccione Empleado: "/>
-                <p:selectOneMenu id="empmo" value="#{otPorasignarController.persona.id}" style="width:150px" required="true" requiredMessage="Empleado es REQUERIDO">
+                <h:panelGrid id="costosp" columns="5" cellpadding="3">
+                    <h:outputText value="Seleccione Empleado: " rendered="#{otPorasignarController.noaplica==false}"/>
+                <p:selectOneMenu id="empmo" value="#{otPorasignarController.persona.id}" style="width:170px" required="true" requiredMessage="Empleado es REQUERIDO" rendered="#{otPorasignarController.noaplica==false}">
                     <f:selectItem itemLabel="Seleccione Empleado" itemValue="" noSelectionOption="true"></f:selectItem> 
-                    <f:selectItems value="#{otPorasignarController.empleadosmo}" var="mimo" itemLabel="#{mimo.persona.primernombre} #{mimo.persona.primerapellido}" itemValue="#{mimo.persona.id}" ></f:selectItems>
+                    <f:selectItems value="#{otPorasignarController.empleadosmo}" var="mimo" itemLabel="#{mimo.persona.primernombre} #{mimo.persona.segundonombre} #{mimo.persona.primerapellido} #{mimo.persona.segundoapellido}" itemValue="#{mimo.persona.id}" ></f:selectItems>
                 </p:selectOneMenu>
                 
-                <h:outputText value="Fecha finalizacion:"/>
-                <p:calendar id="ffin" value="#{otPorasignarController.operacionesordent.fechaterminado}" readonlyInput="true" locale="es"></p:calendar>
+                <!--<h:outputText value="Fecha finalizacion:"/>
+                <p:calendar id="ffin" value="" readonlyInput="true" locale="es"></p:calendar>-->
                 
-                <h:outputText value="Costo Negociado $"/>
+                <h:outputText value="Costo Negociado $" rendered="#{otPorasignarController.noaplica==false}"/>
                 <p:inputNumber id="costonegociado" value="#{otPorasignarController.operacionesordent.montomo}" 
                                validatorMessage="El monto Neg. debe estar entre el Minimo y el Maximo" validator="#{otPorasignarController.validate}"
-                               required="true" requiredMessage="Monto negociado REQUERIDO"></p:inputNumber>
+                               required="true" requiredMessage="Monto negociado REQUERIDO" autocomplete="off" rendered="#{otPorasignarController.noaplica==false}" ></p:inputNumber>
              
                 <p:commandButton value="INGRESAR" id="guardarpin" icon="ui-icon-disk" 
                                  action="#{otPorasignarController.asignarOperario()}" update=":form" onsuccess=":mismsg"  >

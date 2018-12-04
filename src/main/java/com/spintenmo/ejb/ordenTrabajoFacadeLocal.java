@@ -42,4 +42,7 @@ public interface ordenTrabajoFacadeLocal {
     List<ordenTrabajo> otXfecha(Date fechainicial,Date fechafinal);
     
     void actualizarEstado(int idot);
+    
+    ordenTrabajo otPlacafechautoriz(String placa);
+    
 }

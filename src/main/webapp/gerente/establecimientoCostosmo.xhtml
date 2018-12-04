@@ -88,18 +88,21 @@
         </p:column>
         
     </p:dataTable>
-    
     <h3>Exportar Datos solo de esta Página</h3>
     <h:commandLink>
         <p:graphicImage name="/imagenes/excel.png" />
         <p:dataExporter type="xlsx" target="tblestabc" fileName="cars" pageOnly="true"/>
     </h:commandLink>
- 
     <h:commandLink>
         <p:graphicImage name="/imagenes/pdf.png" />
         <p:dataExporter type="pdf" target="tblestabc" fileName="cars" pageOnly="true" />
     </h:commandLink>
-</h:form> 
+</h:form>
+    <h:form>
+        
+    </h:form>
+    
+
 </ui:define>
 
 </ui:composition>

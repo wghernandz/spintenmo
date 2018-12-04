@@ -298,4 +298,46 @@ public class operacionesOrdentFacade extends AbstractFacade<operacionesOrdent> i
       }
       return lista;
     }
+    
+          //obtener ordenes segun cualquier estado, no importando la fecha mostrar agrupado por empleado y sumarizado
+    @Override
+    public List<operacionesOrdent> otEstado(String estado){
+      List<operacionesOrdent> lista = null;
+      String consulta;
+      String consulta2;
+      try{
+        System.out.println("RESULTADO DE COMPARAR"+estado.equals("Preplanilla"));
+        
+        if(estado.equals("Preplanilla")==true){
+           System.out.println("PREPLANILLA");
+           consulta="SELECT op FROM operacionesOrdent op WHERE op.estado = 'Finalizado' OR op.estado='Anticipo' ORDER BY op.empleadomo.persona.id,op.fechaasignado DESC";
+           Query query=em.createQuery(consulta);
+           lista = query.getResultList();
+           
+        }else {
+           System.out.println("NO PREPLANILLA");
+           consulta2="SELECT op FROM operacionesOrdent op WHERE op.estado = ?1 ORDER BY op.empleadomo.persona.id,op.fechaasignado DESC";
+           Query query2=em.createQuery(consulta2);
+           query2.setParameter(1,estado);
+           lista = query2.getResultList();
+        }
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }
+    
+    @Override
+    public void finalizarTodo(){
+         String consulta;
+      try{
+        consulta="UPDATE operacionesOrdent op SET op.fechaterminado = ?1,op.montoplanilla=op.montopendiente,op.estado = 'Finalizado' WHERE op.estado = 'Operario Asignado' OR op.estado='Complemento'";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1,new Date(),TemporalType.DATE);
+        query.executeUpdate();
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      } 
+    }
 }

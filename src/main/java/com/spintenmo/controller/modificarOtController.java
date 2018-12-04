@@ -239,19 +239,20 @@ public class modificarOtController implements Serializable {
         
         if(ordenTrabajoEJB.obtenerOt(codigo)==null){
             FacesContext.getCurrentInstance().addMessage("test", new javax.faces.application.FacesMessage("Successful"));
- 
            
         }else{
-        
             this.ordentrabajo=ordenTrabajoEJB.obtenerOt(codigo);
             //Establecer valores guardados en Select y mostrarlos en vista
             this.marca.setId(ordentrabajo.getModelot().getMarca().getId());
             this.modelo.setId(ordentrabajo.getModelot().getId());
-            this.anio.setId(ordentrabajo.getAniot().getId());
+            if(ordentrabajo.getAniot()!=null){
+               this.anio.setId(ordentrabajo.getAniot().getId());
+            }
             this.aseguradoracliente.setId(ordentrabajo.getAseguradoracliente().getId());
-            this.colorvehiculo.setId(ordentrabajo.getColorvehiculo().getId());
-            this.disabledcodigo=true;   
-           
+            if(ordentrabajo.getColorvehiculo()!=null){
+                this.colorvehiculo.setId(ordentrabajo.getColorvehiculo().getId());
+            }
+            this.disabledcodigo=true;      
         }
     }
     
@@ -267,11 +268,20 @@ public class modificarOtController implements Serializable {
   public String actualizarOrden(){
     try{
         
-    if(ordenTrabajoEJB.obtenerOt(this.ordentrabajo.getCodigo(),"Costos asignados")!=null){    
-    this.ordentrabajo.setAniot(anio);
+    if(ordenTrabajoEJB.obtenerOt(this.ordentrabajo.getCodigo(),"Costos asignados")==null){
+        System.out.println("VALOR"+ordenTrabajoEJB.obtenerOt(this.ordentrabajo.getCodigo(),"Costos asignados"));
+    if(this.anio.getId()==0){
+        this.ordentrabajo.setAniot(null);
+    }else{
+         this.ordentrabajo.setAniot(anio);
+    }
     this.ordentrabajo.setModelot(modelo);
     this.ordentrabajo.setAseguradoracliente(aseguradoracliente);
-    this.ordentrabajo.setColorvehiculo(colorvehiculo);
+    if(this.colorvehiculo.getId()==0){
+        this.ordentrabajo.setColorvehiculo(null);
+    }else{
+        this.ordentrabajo.setColorvehiculo(colorvehiculo);
+    }
     ordenTrabajoEJB.edit(ordentrabajo); 
     
         FacesContext.getCurrentInstance().addMessage(

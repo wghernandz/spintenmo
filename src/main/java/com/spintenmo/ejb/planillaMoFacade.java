@@ -189,7 +189,26 @@ public class planillaMoFacade extends AbstractFacade<planillaMo> implements plan
        System.out.println(e.getMessage());
       }
       return lista;
-    } 
+    }
+    
+    //PARA IMPRIMIR DESCUENTOS EN PLANILLA PAGADA
+    @Override
+    public List<Descuentos> imprimirDescuentospagado(Date fechapago){
+      List<Descuentos> lista = null;
+     
+      try{
+        String consulta;
+        consulta="SELECT a FROM Abonos a, Descuentos d, Persona p "
+                + " WHERE d.empleadomo.persona.id=p.id AND d.id=a.descuentos.id and a.fechaabono = ?1";
+                        
+        Query query=em.createQuery(consulta);
+        lista = query.getResultList();
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }
     
       //ELIMINAR PLANILLA GENERADA
     @Override
@@ -269,5 +288,25 @@ public class planillaMoFacade extends AbstractFacade<planillaMo> implements plan
        System.out.println(e.getMessage());
       }
       return valor;
+    } 
+    
+    
+        //Obtener planillas segun fecha
+    @Override
+    public List<planillaMo> planillaFecha(Date finicio,Date ffin){
+      List<planillaMo> list = null;
+      String consulta;
+      try{
+        consulta="SELECT p FROM planillaMo p WHERE p.fpagado >= ?1 AND p.fpagado <= ?2";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1, finicio);
+        query.setParameter(2, ffin);
+      
+        list = query.getResultList();
+    
+      }catch (Exception e){
+        System.out.println(e.getMessage());
+      }
+        return list;
     }   
 }

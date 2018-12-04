@@ -13,6 +13,7 @@ import com.spintenmo.modelo.anticipoMo;
 import com.spintenmo.modelo.empleadoMo;
 import com.spintenmo.modelo.operacionesOrdent;
 import com.spintenmo.modelo.ordenTrabajo;
+import com.spintenmo.modelo.usuarioRole;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class ordenesAsignadasController implements Serializable{
     private Persona persona;
     private empleadoMo empleadomo;
     private ordenTrabajo ordentrabajo;
+    private usuarioRole role;
     
     //variables
     private boolean check;
@@ -215,6 +217,14 @@ public class ordenesAsignadasController implements Serializable{
     public void setPdfOpt(PDFOptions pdfOpt) {
         this.pdfOpt = pdfOpt;
     }
+
+    public usuarioRole getRole() {
+        return role;
+    }
+
+    public void setRole(usuarioRole role) {
+        this.role = role;
+    }
     
     public void actualizarOtAsignadas(){
         operacionesordentList=operacionesordentEJB.otAsignadas();
@@ -278,7 +288,7 @@ public class ordenesAsignadasController implements Serializable{
             this.operacionesordent.setEstado("Finalizado");
             this.operacionesordent.setMontoplanilla(operacionesordent.getMontopendiente());
             operacionesordentEJB.edit(operacionesordent);
-        }else{ //SI SE REGISTRA UN ANTICIPO ACTULIZAR ESTADO DE OPERACION A CON ANTICIPO Y GUARDAR ANTICIPO
+            }else{ //SI SE REGISTRA UN ANTICIPO ACTULIZAR ESTADO DE OPERACION A CON ANTICIPO Y GUARDAR ANTICIPO
            
              //GUARDAR ANTICIPO
             this.anticipomo.setOperacionesordent(operacionesordent);
@@ -288,12 +298,8 @@ public class ordenesAsignadasController implements Serializable{
             this.operacionesordent.setEstado("Anticipo");
             this.operacionesordent.setFechaanticipo(new Date());
             this.operacionesordent.setMontoplanilla(anticipomo.getMontoanticipo());
-            operacionesordentEJB.edit(operacionesordent);
-            
-            
-            
-        }
-        
+            operacionesordentEJB.edit(operacionesordent);    
+            }
         init();
     }
     
@@ -339,7 +345,7 @@ public class ordenesAsignadasController implements Serializable{
        init();
    }
    
-     //validar que el costo negociado este entre maximo y minimo
+     //validar que el costo negociado este entre maximo y minimo, no utilizado por el momento
    public void validateot(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         String toperacion=operacionesordent.getTipooperaciones();
         BigDecimal monto=((BigDecimal)value);
@@ -377,7 +383,28 @@ public class ordenesAsignadasController implements Serializable{
         pdfOpt.setCellFontSize("8");
         pdfOpt.setFacetFontSize("10");
         
-     
+    }
+         
+    //Metodo para actualizar a estado finalizado todas las ordenes que posean estado finalizado o anticipo para calculo de planilla; 
+    public String finalizarTodo(){
+        
+          operacionesordentEJB.finalizarTodo();
+          
+           FacesContext.getCurrentInstance().addMessage(
+        null, new FacesMessage("Ordenes Actualizadas"));
+ 
+        FacesContext.getCurrentInstance()
+            .getExternalContext()
+            .getFlash().setKeepMessages(true);
+ 
+        UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
+        return view.getViewId() + "?faces-redirect=true&includeViewParams=true";
+    }
+    
+    public int obtenerRole(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        this.role= (usuarioRole) context.getExternalContext().getSessionMap().get("mirol");
+        return this.role.getId();
     }
    
 }

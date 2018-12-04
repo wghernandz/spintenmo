@@ -46,6 +46,16 @@ public class asignarcostoController implements Serializable {
     private ordenTrabajoFacadeLocal ordentrabajoEJB;
     @EJB
     private operacionesOrdentFacadeLocal operacionesordentEJB;
+    @EJB
+    private aseguradoraClienteFacadeLocal aseguradoraclienteEJB;
+    @EJB
+    private MarcaFacadeLocal marcaEJB;
+    @EJB
+    private ModeloFacadeLocal modeloEJB;
+    @EJB
+    private colorVehiculoFacadeLocal colorEJB;
+    @EJB
+    private AnioFacadeLocal anioEJB;
     //@Inject
     //private asignarcostoController costocontroller; 
     //ENTIDADES
@@ -56,6 +66,12 @@ public class asignarcostoController implements Serializable {
     //LISTAS
      List<ordenTrabajo> ordenesnoasignadas;
      List<ordenTrabajo> filteredOrdenes;
+     List<aseguradoraCliente> clientes;
+     List<Marca> marcas;
+     List<Modelo> modelos;
+     List<colorVehiculo> colores;
+     List<Anio> anios;
+     
     //variables
     private BigDecimal maxpintura;
     private BigDecimal minpintura;
@@ -68,7 +84,11 @@ public class asignarcostoController implements Serializable {
         //filteredOrdenes=ordentrabajoEJB.otIngresadas();
         operacionesordent=new operacionesOrdent();
         //ordentrabajo=new ordenTrabajo();
-       
+        clientes=aseguradoraclienteEJB.findAll();
+        marcas=marcaEJB.findAll();
+        modelos=modeloEJB.findAll();
+        colores=colorEJB.findAll();
+        anios=anioEJB.findAll();
     }
 
     public ordenTrabajoFacadeLocal getOrdentrabajoEJB() {
@@ -217,4 +237,85 @@ public class asignarcostoController implements Serializable {
         }
         return obj;
     }
+
+    public aseguradoraClienteFacadeLocal getAseguradoraclienteEJB() {
+        return aseguradoraclienteEJB;
+    }
+
+    public void setAseguradoraclienteEJB(aseguradoraClienteFacadeLocal aseguradoraclienteEJB) {
+        this.aseguradoraclienteEJB = aseguradoraclienteEJB;
+    }
+
+    public List<aseguradoraCliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(List<aseguradoraCliente> clientes) {
+        this.clientes = clientes;
+    }
+
+    public MarcaFacadeLocal getMarcaEJB() {
+        return marcaEJB;
+    }
+
+    public void setMarcaEJB(MarcaFacadeLocal marcaEJB) {
+        this.marcaEJB = marcaEJB;
+    }
+
+    public ModeloFacadeLocal getModeloEJB() {
+        return modeloEJB;
+    }
+
+    public void setModeloEJB(ModeloFacadeLocal modeloEJB) {
+        this.modeloEJB = modeloEJB;
+    }
+
+    public colorVehiculoFacadeLocal getColorEJB() {
+        return colorEJB;
+    }
+
+    public void setColorEJB(colorVehiculoFacadeLocal colorEJB) {
+        this.colorEJB = colorEJB;
+    }
+
+    public AnioFacadeLocal getAnioEJB() {
+        return anioEJB;
+    }
+
+    public void setAnioEJB(AnioFacadeLocal anioEJB) {
+        this.anioEJB = anioEJB;
+    }
+
+    public List<Marca> getMarcas() {
+        return marcas;
+    }
+
+    public void setMarcas(List<Marca> marcas) {
+        this.marcas = marcas;
+    }
+
+    public List<Modelo> getModelos() {
+        return modelos;
+    }
+
+    public void setModelos(List<Modelo> modelos) {
+        this.modelos = modelos;
+    }
+
+    public List<colorVehiculo> getColores() {
+        return colores;
+    }
+
+    public void setColores(List<colorVehiculo> colores) {
+        this.colores = colores;
+    }
+
+    public List<Anio> getAnios() {
+        return anios;
+    }
+
+    public void setAnios(List<Anio> anios) {
+        this.anios = anios;
+    }
+   
 }

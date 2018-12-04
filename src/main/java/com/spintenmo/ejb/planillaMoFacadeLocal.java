@@ -52,4 +52,8 @@ public interface planillaMoFacadeLocal {
     List<anticipoMo> anticipoPlanpag(Date fechapago);
     
     planillaMo planillaSegunEmpEstado(int emp,String estado);
+    
+    List<Descuentos> imprimirDescuentospagado(Date fechapago);
+    
+    List<planillaMo> planillaFecha(Date fechainicio,Date fechafin);
 }

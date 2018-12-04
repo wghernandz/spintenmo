@@ -15,7 +15,8 @@
             
     <h:form id="form" >
          
-     <h:panelGrid id="grid-payment-table">        
+     <h:panelGrid id="grid-payment-table">
+         <p:commandButton id="finalizartodo" type="button" value="FINALIZAR TODO" style="margin-left: 1100px;" onclick="PF('confirmfin').show();" disabled="#{ordenesAsignadasController.operacionesordentList==null or ordenesAsignadasController.obtenerRole()==4}"/>
          <p:dataTable  id="tbl" var="orden" value="#{ordenesAsignadasController.operacionesordentList}"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
                  paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otasigTable" 
@@ -31,6 +32,7 @@
                 <p:graphicImage name="/imagenes/pdf.png" width="24"/>
                 <p:dataExporter type="pdf" target="tbl" fileName="ordenes-asignadas" options="#{ordenesAsignadasController.pdfOpt}"/>
             </h:commandLink>
+            
         </f:facet>
             
         <p:column filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" footerText="contains" filterMatchMode="contains">
@@ -106,12 +108,11 @@
             <f:facet name="header">
                 <h:outputText value="Monto MO" />
             </f:facet>
-            <p:commandLink update=":form5" oncomplete="PF('dlg5').show();" action="#{ordenesAsignadasController.setOperacionesordent(orden)}" disabled="#{orden.estado!='Operario Asignado'}" >
+            <p:commandLink update=":form5" oncomplete="PF('dlg5').show();" action="#{ordenesAsignadasController.setOperacionesordent(orden)}" disabled="#{orden.estado!='Operario Asignado' or ordenesAsignadasController.obtenerRole()==4}" >
             <h:outputText value="#{orden.montomo}" >
                 <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
             </h:outputText>
-            </p:commandLink>
-            
+            </p:commandLink> 
         </p:column>
         
         <p:column>
@@ -175,7 +176,7 @@
                     </f:facet>
                         <h:outputText value="Monto $"/>
                         <p:inputNumber id="monto" binding="#{montoComponent}" value="#{ordenesAsignadasController.anticipomo.montoanticipo}" decimalPlaces="2"
-                                       minValue="0.00" maxValue="#{ordenesAsignadasController.operacionesordent.montopendiente}" disabled="#{ordenesAsignadasController.check == true or ordenesAsignadasController.operacionesordent.estado=='Anticipo'}" required="true">  
+                                       minValue="0.00" maxValue="#{ordenesAsignadasController.operacionesordent.montopendiente}" disabled="#{ordenesAsignadasController.check == true or ordenesAsignadasController.operacionesordent.estado=='Anticipo' or ordenesAsignadasController.obtenerRole()==4}" required="true">  
                         </p:inputNumber>
         
                         <h:outputText value="Monto pendiente $"/>
@@ -224,9 +225,9 @@
                             <h:outputText value="Monto Max $"/>
                             <p:inputNumber value="#{ordenesAsignadasController.operacionesordent.montomax==null ? ordenesAsignadasController.operacionesordent.montomaxp: ordenesAsignadasController.operacionesordent.montomax }" decimalPlaces="2" disabled="true"></p:inputNumber>
                             <h:outputText value="Monto Negociado:"/>
-                            <p:inputNumber id="monton" decimalPlaces="2" 
-                                           validatorMessage="El monto neg. debe estar entre un MIN y MAX asignado" validator="#{ordenesAsignadasController.validateot}"
-                                           value="#{ordenesAsignadasController.operacionesordent.montomo}"></p:inputNumber>
+                            <p:inputNumber id="monton" decimalPlaces="2" value="#{ordenesAsignadasController.operacionesordent.montomo}">
+                                           <!--validatorMessage="El monto neg. debe estar entre un MIN y MAX asignado" validator=""-->
+                                           </p:inputNumber>
                           <f:facet name="footer">
                             <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
                                              action="#{ordenesAsignadasController.cambiarMontoneg()}" update=":form" oncomplete="PF('dlg5').hide()" onsuccess=":mismsg" >
@@ -236,7 +237,21 @@
                           </f:facet>
                         </h:panelGrid>
                     </h:form>
-                </p:dialog> 
+                </p:dialog>
+                
+                 <p:dialog id="confirmar" widgetVar="confirmfin">
+                    <h:form>
+                        <p:panelGrid columns="3" >
+                        <h:outputText value="Esta Seguro/a de Dar por Finalizado todas las ordenes asignadas?"/>     
+                        <p:commandButton id="fin" value="SI" oncomplete="PF('confirmfin').hide();" >
+                            <p:ajax event="click" listener="#{ordenesAsignadasController.finalizarTodo()}" 
+                                update="form:tbl,form:finalizartodo"></p:ajax>
+                        </p:commandButton>
+                        <p:commandButton value="NO" id="cancel" onclick="confirmfin.hide();" immediate="true"/>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
                 
             </ui:define>
             

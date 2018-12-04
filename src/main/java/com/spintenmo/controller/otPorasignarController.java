@@ -16,6 +16,7 @@ import com.spintenmo.modelo.Persona;
 import com.spintenmo.modelo.empleadoMo;
 import com.spintenmo.modelo.operacionesOrdent;
 import com.spintenmo.modelo.ordenTrabajo;
+import com.spintenmo.modelo.usuarioRole;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -53,12 +54,14 @@ public class otPorasignarController implements Serializable {
     private empleadoMo empleadomo;
     private Persona persona;
     private ordenTrabajo ordentrabajo;
-    
+    private usuarioRole role;
     //PARA FORMATEAR EXPORTER
     private ExcelOptions excelOpt;
     private PDFOptions pdfOpt;
     
     private String valorestado;
+    
+    private boolean noaplica;
     @PostConstruct
     public void init(){
         opporasignar=operacionesordentEJB.otPorasignar(operacionesordent);
@@ -84,6 +87,16 @@ public class otPorasignarController implements Serializable {
     public void setOperacionesordent(operacionesOrdent operacionesordent) {
         this.operacionesordent = operacionesordent;
         empleadosmo=operacionesordentEJB.operarioSegunop(operacionesordent);
+        this.setNoaplica(false);
+        if("enderezado".equals(this.operacionesordent.getTipooperaciones())){
+            if(this.operacionesordent.getMontomin().compareTo(this.operacionesordent.getMontomax())==0){
+                this.operacionesordent.setMontomo(this.operacionesordent.getMontomin());
+            }
+        }else{
+             if(this.operacionesordent.getMontominp().compareTo(this.operacionesordent.getMontomaxp())==0){
+                this.operacionesordent.setMontomo(this.operacionesordent.getMontominp());
+            }
+        }
     }
     //set adicional para cuando se requiera cambiar el estado
     public void setOperacionesordentEstado(operacionesOrdent operacionesordent) {
@@ -170,8 +183,25 @@ public class otPorasignarController implements Serializable {
     public void setOrdentrabajo(ordenTrabajo ordentrabajo) {
         this.ordentrabajo = ordentrabajo;
     }
+
+    public boolean isNoaplica() {
+        return noaplica;
+    }
+
+    public void setNoaplica(boolean noaplica) {
+        this.noaplica = noaplica;
+    }
+
+    public usuarioRole getRole() {
+        return role;
+    }
+
+    public void setRole(usuarioRole role) {
+        this.role = role;
+    }
     
     public void asignarOperario(){
+        if (this.noaplica==false){
         this.empleadomo.setPersona(persona);
         this.operacionesordent.setEmpleadomo(empleadomo);
         this.operacionesordent.setFechaasignado(new Date());
@@ -185,6 +215,18 @@ public class otPorasignarController implements Serializable {
         new FacesMessage("Se Actualizo Orden de Trabajo: " + operacionesordent.getOrdentrabajo().getCodigo()));
         
         init();
+        }
+        else{
+            this.operacionesordent.setFechaasignado(new Date());
+            this.operacionesordent.setMontopendiente(operacionesordent.getMontomo());
+            this.operacionesordent.setEstado("No Aplica");
+            operacionesordentEJB.edit(operacionesordent);
+    
+            FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage("Se Actualizo Orden de Trabajo: " + operacionesordent.getOrdentrabajo().getCodigo()));
+        
+            init();
+        }
     }
     
         //validar que el costo negociado este entre maximo y minimo
@@ -250,6 +292,12 @@ public class otPorasignarController implements Serializable {
         
         init();
         
+    }
+    
+    public int obtenerRole(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        this.role= (usuarioRole) context.getExternalContext().getSessionMap().get("mirol");
+        return this.role.getId();
     }
         
 }
