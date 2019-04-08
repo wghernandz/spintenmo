@@ -39,10 +39,11 @@
         </h:panelGrid>
         <h:panelGrid columns="4">
             <h:outputText value="Tipo de Ingreso:" />
-            <p:selectOneRadio id="console" value="#{ingresootController.ordentrabajo.tipoorden}" style="width: 600px">
-                <f:selectItem itemLabel="Ingreso de Orden" itemValue="0"  />
+            <p:selectOneRadio id="tipoord" value="#{ingresootController.tipoorden}"  style="width: 600px" >
+                <f:selectItem itemLabel="Ingreso de Orden" itemValue="0" />
                 <f:selectItem itemLabel="Complemento de Orden" itemValue="1" />
-                <f:selectItem itemLabel="Trabajo Externo" itemValue="2" />
+                <f:selectItem itemLabel="Orden de Particular" itemValue="2" />
+                <p:ajax update="tipoord,codigo_ot,codigoot" event="click" listener="#{ingresootController.asignarCodigoOt()}" />
             </p:selectOneRadio>
         </h:panelGrid>
     </p:fieldset>

@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+        <ui:define name="content">
+            <h:form>
+                <h:panelGrid columns="6">
+                    <h:outputText value="DIGITE PLACA" />
+                    <h:inputText value="#{consultasotController.placa}" required="true"/>
+                    <h:outputText value="TIPO OPERACION"/>
+                    <p:selectOneMenu id="tipooper" value="#{consultasotController.tipoop}" style="width:200px">
+                        <f:selectItem itemLabel="enderezado" itemValue="enderezado"/>
+                        <f:selectItem itemLabel="pintura" itemValue="pintura"/>
+                    </p:selectOneMenu>
+                    <h:outputText value="ESTADO"/>
+                    <p:selectOneMenu id="estado" value="#{consultasotController.estado}" style="width:200px">
+                        <f:selectItem itemLabel="Pagada" itemValue="Pagada"/>
+                    </p:selectOneMenu>
+                    <p:commandButton value="BUSCAR" action="#{consultasotController.buscarXplaca()}" update="form"/>
+                </h:panelGrid>
+            </h:form>
+        <h:form id="form" >
+            <p:dataTable id="tbl" var="orden" value="#{consultasotController.operacionesordentLIST}"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                        paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
+                        emptyMessage="No Operaciones found with given criteria" >
+                <f:facet name="{Exporters}">
+                <h:commandLink>
+                    <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                    <p:dataExporter type="xls" target="tbl" fileName="Ordenes-por-Asignar" />
+                </h:commandLink>
+                    
+                <h:commandLink>
+                    <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                    <p:dataExporter type="pdf" target="tbl" fileName="Ordenes-por-Asignar" />
+                </h:commandLink>
+ 
+                </f:facet>
+                <p:column width="120" headerText="Codigo" exportable="false">
+                    <f:facet name="header">
+                        <h:outputText value="Codigo Orden" />
+                    </f:facet>
+                        <h:outputText value="#{orden.ordentrabajo.codigo}" />
+                </p:column>
+                        
+            <p:column headerText="Placa" >
+                <f:facet name="header">
+                    <h:outputText value="Placa" />
+                </f:facet>
+                <h:outputText value="#{orden.ordentrabajo.placa}" />
+            </p:column>
+        
+            <p:column width="75">
+                <f:facet name="header">
+                    <h:outputText value="Tipo Operaciones" />
+                </f:facet>
+                <h:outputText value="#{orden.tipooperaciones}"/>
+            </p:column>
+        
+            <p:column width="100" >
+                <f:facet name="header"> 
+                    <h:outputText value="Estado" />
+                </f:facet>
+                    <h:outputText value="#{orden.estado=='Anticipo' ? 'Pago Anticipado':orden.estado}" />
+            </p:column>
+                
+            <p:column width="90">
+                <f:facet name="header">
+                    <h:outputText value="Monto" />
+                </f:facet>
+                <h:outputText value="#{orden.montoplanilla}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            </p:column>
+                
+            <p:column width="80">
+                <f:facet name="header">
+                    <h:outputText value="Fecha de Cancelacion" />
+                </f:facet>
+                <h:outputText value="#{orden.fechapago}" >
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                </h:outputText>
+            </p:column>
+                
+            <p:column width="90">
+                <f:facet name="header">
+                    <h:outputText value="Operario" />
+                </f:facet>
+                <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            </p:column> 
+ 
+            <p:column width="200">
+                <f:facet name="header">
+                    <h:outputText value="Aseguradora"/>
+                </f:facet>
+                <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
+            </p:column>
+        
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Marca" />
+                </f:facet>
+                <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
+            </p:column>
+        
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText value="Modelo" />
+                </f:facet>
+                <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}" />
+            </p:column>   
+        </p:dataTable>
+ 
+    <h3>Exportar Datos solo de esta Página</h3>
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/excel.png" />
+        <p:dataExporter type="xls" target="tbl" fileName="cars" pageOnly="true" />
+    </h:commandLink>
+ 
+    <h:commandLink>
+        <p:graphicImage name="/imagenes/pdf.png" />
+        <p:dataExporter type="pdf" target="tbl" fileName="cars" pageOnly="true" options="#{otPorasignarController.pdfOpt}"/>
+    </h:commandLink>
+    </h:form>
+
+    </ui:define>
+
+            <ui:define name="bottom">
+                bottom
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

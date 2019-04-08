@@ -6,20 +6,18 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"      
       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-    <!--<f:event listener="" type="preRenderView" />-->
     <body>
 
 <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
 
 <ui:define name="content">
-    
+<h2>ORDENES DE TRABAJO SIN COSTO ASIGNADO</h2>    
 <h:form id="formcosto" >
-    <p:poll interval="2" listener="#{asignarcostoController.init()}" update="tblestabc" />
+    <p:poll interval="2" listener="#{asignarcostoController.refrescarTabla()}" update="tblestabc" />
     <p:remoteCommand name="inicializar" autoRun="true" action="#{asignarcostoController.init()}"/>
-    
     <p:dataTable id="tblestabc" var="orden" value="#{asignarcostoController.ordenesnoasignadas}" 
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
-                 paginator="true" rows="10" style="margin-bottom:20px" widgetVar="ordenTableestabc" 
+                 paginator="true" rows="7" style="margin-bottom:20px" widgetVar="ordenTableestabc" 
                  emptyMessage="No Orden found with given criteria" >
         
         <f:facet name="{Exporters}">
@@ -39,7 +37,7 @@
             </f:facet>
             <p:commandLink action="asignarminmaxOrden" 
                            actionListener="#{asignarcostoController.setOrdentrabajo(orden)}" 
-                           value="#{orden.codigo}">     
+                           value="#{orden.codigo}" disabled="#{asignarcostoController.obtenerRole()==4}">     
             </p:commandLink>
         </p:column>
         
@@ -87,21 +85,206 @@
             <h:outputText value="#{orden.modelot.nombremodelo}" />
         </p:column>
         
-    </p:dataTable>
-    <h3>Exportar Datos solo de esta Página</h3>
-    <h:commandLink>
-        <p:graphicImage name="/imagenes/excel.png" />
-        <p:dataExporter type="xlsx" target="tblestabc" fileName="cars" pageOnly="true"/>
-    </h:commandLink>
-    <h:commandLink>
-        <p:graphicImage name="/imagenes/pdf.png" />
-        <p:dataExporter type="pdf" target="tblestabc" fileName="cars" pageOnly="true" />
-    </h:commandLink>
+    </p:dataTable>   
 </h:form>
-    <h:form>
+<h:form id="linkform">
+    <p:commandButton value="AGREGAR TRABAJO MECANICA O TALLER" onclick="PF('tallermecanica').show();"    action="#{asignarcostoController.crearOperacionot}" update="tmec" />
+</h:form>
+            <p:dialog header="Agregar" id="tallermec" widgetVar="tallermecanica" showEffect="explode" hideEffect="bounce" height="400" width="500" closable="true">
+                    <h:form id="tmec" >
+                    <h:panelGrid columns="2">
+                           <h:outputText value="Cliente:"/>
+                           <p:selectOneRadio id="console" value="#{asignarcostoController.trabajotaller}" required="true" requiredMessage="No especificó si es DE MECANICA O TALLER" >
+                               <f:selectItem itemLabel="MECANICA" itemValue="MECANICA" />
+                                <f:selectItem itemLabel="TALLER" itemValue="TALLER" />
+                                <p:ajax event="change" update="@this,micodigo,codigooculto" listener="#{asignarcostoController.asignarCodigoOt}" />
+                            </p:selectOneRadio>
+                           
+                           <h:outputText value="Marca:"/>
+                           <p:selectOneMenu id="marca" value="#{asignarcostoController.marca.id}" style="width:200px" >
+                            <f:selectItem itemLabel="Seleccione Marca" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{asignarcostoController.marcas}" var="mimarca" itemLabel="#{mimarca.nombremarca}" itemValue="#{mimarca.id}" />
+                            <f:ajax listener="#{asignarcostoController.cambiarModelos}" render="modelo"/>
+                           </p:selectOneMenu>
+            
+                           <h:outputText value="Modelo:"/>
+                           <p:selectOneMenu id="modelo" value="#{asignarcostoController.modelo.id}" style="width:200px" >
+                                <f:selectItem itemLabel="Seleccione Modelo" itemValue="" noSelectionOption="true" />
+                                <f:selectItems value="#{asignarcostoController.modelos}" var="mimodelo" itemLabel="#{mimodelo.nombremodelo}" itemValue="#{mimodelo.id}" />
+                           </p:selectOneMenu>
+                    
+                        <h:outputText value="PLACA"/>
+                        <p:inputText value="#{asignarcostoController.ordentrabajo.placa}" required="true" requiredMessage="Placa es Requrerida">
+                            <p:ajax event="keyup" listener="#{asignarcostoController.asignarCodigoOt}" update="micodigo,codigooculto"  />
+                        </p:inputText>
+                        <h:outputText value="TIPO DE OPERACION"/>
+                        <p:selectOneMenu id="operacion" value="#{asignarcostoController.operacionesordent.tipooperaciones}" style="width:250px" required="true">
+                            <f:selectItem itemLabel="enderezado" itemValue="enderezado" />
+                            <f:selectItem itemLabel="pintura" itemValue="pintura" />
+                        </p:selectOneMenu>
+                        <h:outputText value="MONTO"/>
+                        <p:inputNumber value="#{asignarcostoController.operacionesordent.montomo}" decimalPlaces="2"  required="true" requiredMessage="Monto es Requerido"  />
+                        <h:outputText value="CODIGO" />
+                        <p:inputText id="micodigo"  value="#{asignarcostoController.ordentrabajo.codigo}" readonly="true" required="true" requiredMessage="CODIGO es requerido"  />
+                        <h:inputHidden id="codigooculto" value="#{asignarcostoController.ordentrabajo.codigo}" required="true" requiredMessage="CODIGO es requerido" />
+                    </h:panelGrid>
+                    
+                    <h:panelGrid cellpadding="3">
+                        <p:commandButton value="INGRESAR" id="cambiar" icon="ui-icon-disk" action="#{asignarcostoController.ingresarOtmecanica()}"
+                                         update=":form:tbl" onsuccess=":mismsg" oncomplete="PF('tallermecanica').hide()"  >
+                        </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="tallermecanica.hide();" immediate="true" update="tmec" action="#{asignarcostoController.cancelar}" />  
+                        
+                    </h:panelGrid>
+                    </h:form>
+            </p:dialog>
+      <h2>ORDENES DE TRABAJO ACTIVAS</h2>
+      <h4>Click sobre montos para realizar cambios</h4>
+      <h:form id="form" >
+          <p:dataTable id="tbl" var="orden" value="#{asignarcostoController.ottodas}"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
+                 emptyMessage="No Operaciones found with given criteria" filteredValue="#{asignarcostoController.filteredottodas}">
+ 
+        <p:column width="120" filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" footerText="contains" filterMatchMode="contains" exportable="false">
+            <f:facet name="header">
+                <h:outputText value="Codigo Orden" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.codigo}" />
+          </p:column>
+                        
+        <p:column filterBy="#{orden.ordentrabajo.placa}" headerText="Placa" footerText="contains" filterMatchMode="contains" width="50">
+            <f:facet name="header">
+                <h:outputText value="Placa" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.placa}" />
+        </p:column>
         
+        <p:column width="200">
+            <f:facet name="header">
+                <h:outputText value="Aseguradora"/>
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
+        </p:column>
+              
+         <p:column width="70">
+            <f:facet name="header">
+                <h:outputText value="Tipo Operaciones" />
+            </f:facet>
+                <h:outputText value="#{orden.tipooperaciones}"/>
+        </p:column>
+        
+        <p:column width="90" >
+            <f:facet name="header"> 
+                <h:outputText value="Estado" />
+            </f:facet>
+                <h:outputText value="#{orden.estado}" />
+        </p:column>
+                        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Minimo" />
+            </f:facet>
+            <h:outputText value="#{orden.montomin}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            <h:outputText value="#{orden.montominp}"><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+        </p:column>
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Maximo" />
+            </f:facet>
+            <p:commandLink update=":form6" oncomplete="PF('dlgcambiarmontomax').show();" action="#{asignarcostoController.setOperacionesordent(orden)}" disabled="#{orden.estado!='Costo asignado'}" >
+            <h:outputText value="#{orden.montomax}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            <h:outputText value="#{orden.montomaxp}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            </p:commandLink>
+        </p:column>
+              
+         <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto a Pagar" />
+            </f:facet>
+             <p:commandLink update=":form5" oncomplete="PF('dlg5').show();" action="#{asignarcostoController.setOperacionesordent(orden)}" disabled="#{orden.estado=='Reasignada' or orden.estado=='Complemento' or orden.montomo.compareTo(orden.montopendiente)==1}" >
+             <h:outputText value="#{orden.montomo}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+              </p:commandLink>
+        </p:column>
+              
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Pendiente" />
+            </f:facet>
+            <h:outputText value="#{orden.montopendiente}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+        </p:column>
+              
+        <p:column width="100">
+            <f:facet name="header">
+                <h:outputText value="Operario" />
+            </f:facet>
+            <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido}" ></h:outputText>
+        </p:column>
+        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Marca" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
+        </p:column>
+        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Modelo" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}" />
+        </p:column>   
+        
+    </p:dataTable>
+ 
     </h:form>
-    
+      
+                <p:dialog header="Cambiar Monto Negociado" id="cambiarmonto" widgetVar="dlg5" showEffect="explode" hideEffect="bounce" height="125" width="615" closable="false" dynamic="true">
+                    <h:form id="form5">
+                        <h:panelGrid columns="4" cellpadding="3">
+                            <h:outputText value="Monto Min $"/>
+                            <p:inputNumber value="#{asignarcostoController.operacionesordent.montomin==null ? asignarcostoController.operacionesordent.montominp: asignarcostoController.operacionesordent.montomin }" decimalPlaces="2" disabled="true"></p:inputNumber>
+                            <h:outputText value="Monto Max $"/>
+                            <p:inputNumber value="#{asignarcostoController.operacionesordent.montomax==null ? asignarcostoController.operacionesordent.montomaxp: asignarcostoController.operacionesordent.montomax }" decimalPlaces="2" disabled="true"></p:inputNumber>
+                            <h:outputText value="Monto Negociado:"/>
+                            <p:inputNumber id="monton" decimalPlaces="2" value="#{asignarcostoController.operacionesordent.montomo}">
+                                    <!--validatorMessage="El monto neg. debe estar entre un MIN y MAX asignado" validator=""-->
+                            </p:inputNumber>
+                          <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{asignarcostoController.cambiarMontoneg()}" update=":form" oncomplete="PF('dlg5').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlg5.hide();" immediate="true" update="cambiarmonto"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+      
+                <p:dialog header="Cambiar Monto Max" id="cambiarmax" widgetVar="dlgcambiarmontomax" showEffect="explode" hideEffect="bounce" height="200" width="700" closable="false" dynamic="true">
+                    <h:form id="form6">
+                        <h:panelGrid columns="4" cellpadding="3">
+                            <h:outputText value="Placa"/>
+                            <p:inputText value="#{asignarcostoController.operacionesordent.ordentrabajo.placa}" disabled="true"></p:inputText>
+                            <h:outputText value="Cliente"/>
+                            <p:inputText value="#{asignarcostoController.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" disabled="true"></p:inputText>
+                            <h:outputText value="Marca"/>
+                            <p:inputText value="#{asignarcostoController.operacionesordent.ordentrabajo.modelot.marca.nombremarca}" disabled="true"></p:inputText>
+                            <h:outputText value="Modelo"/>
+                            <p:inputText value="#{asignarcostoController.operacionesordent.ordentrabajo.modelot.nombremodelo}" disabled="true"></p:inputText>
+                            <h:outputText value="Monto Max $"/>
+                            <p:inputNumber value="#{asignarcostoController.operacionesordent.montomax==null ? asignarcostoController.operacionesordent.montomaxp: asignarcostoController.operacionesordent.montomax }" decimalPlaces="2" ></p:inputNumber>
+                          <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{asignarcostoController.cambiarMontomax}" update=":form" oncomplete="PF('dlgcambiarmontomax').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlgcambiarmontomax.hide();" immediate="true" update="cambiarmax"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
 
 </ui:define>
 

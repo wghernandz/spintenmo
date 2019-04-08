@@ -15,13 +15,21 @@
         <h:form id="form">
                 
                 <p:growl id="growl" life="2000" />
-                <h:panelGrid columns="4" cellpadding="3">
+                <h:panelGrid columns="6" cellpadding="3">
                     
                 <o:outputLabel for="codigoorden" value="Codigo de OT"/>
                 <h:inputText id="codigoorden" value="#{asignarMinmaxController.ordentrabajo.codigo}" disabled="true"></h:inputText>
                 <o:outputLabel for="estado" value="Estado de OT"/>
                 <h:inputText id="estado" value="#{asignarMinmaxController.ordentrabajo.estado}" disabled="true"></h:inputText>
-                </h:panelGrid>       
+         
+                <o:outputLabel for="cliente" value="CLIENTE"/>
+                <h:inputText id="cliente" value="#{asignarMinmaxController.ordentrabajo.aseguradoracliente.nombrecliente}" disabled="true"></h:inputText>
+                <o:outputLabel for="marca" value="Marca"/>
+                <h:inputText id="marca" value="#{asignarMinmaxController.ordentrabajo.modelot.marca.nombremarca}" disabled="true"></h:inputText>
+                <o:outputLabel for="modelo" value="Modelo"/>
+                <h:inputText id="modelo" value="#{asignarMinmaxController.ordentrabajo.modelot.nombremodelo}" disabled="true"></h:inputText>
+                </h:panelGrid>
+                
                 <h:outputText value="COSTO MO ENDEREZADO DE VEHICULO"/>
                 <h:panelGrid columns="6" cellpadding="3">
                 <o:outputLabel for="valormine" value="Valor Minimo" />

@@ -69,10 +69,10 @@ public class rptjefetallerController implements Serializable{
     }
     
     
-    public void generarPorEstado(ActionEvent actionEvent,String estado) throws JRException, IOException{
+    public void generarPorEstado(ActionEvent actionEvent,String estado,String operacion) throws JRException, IOException{
         File jasper=null;
          
-        operacionesordentfinalizadas=operacionesordentEJB.otEstado(estado);
+        operacionesordentfinalizadas=operacionesordentEJB.otEstadoOperacion(estado,operacion);
         System.out.println("longitud "+operacionesordentfinalizadas.size());
         if(estado.equals("Preplanilla")){
             jasper= new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/reportes/ordenesPreplanilla.jasper"));

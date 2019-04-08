@@ -282,7 +282,6 @@ public class calcularPlanillaController implements Serializable {
         this.opplanilla = opplanilla;
     }
     
-    
      public void generarPlanilla() {
          String fechaini;
          String fechafin;
@@ -334,6 +333,19 @@ public class calcularPlanillaController implements Serializable {
          this.planillamo.setRenta(nrenta);
          this.planillamo.setMontoapagar(nmontoapagar);
          planillamoEJB.edit(planillamo);
+     }
+     
+     public void emplVacacion(){
+         if ("SI".equals(this.planillamo.getVacacion())){
+            this.planillamo.setRenta(new BigDecimal(0));
+            this.planillamo.setSalariobase(new BigDecimal(0));
+            this.planillamo.setSubtotalgravado(new BigDecimal(0));
+            this.planillamo.setMontoapagar(planillamo.getMontomototal());
+            planillamoEJB.edit(planillamo);
+         }else{
+            System.out.println("empleado"+planillamo.getEmpleadomo().getPersona().getPrimernombre());
+            actualizarPlanilla(); 
+         }
      }
      
      //Modificar descuentos
@@ -403,7 +415,5 @@ public class calcularPlanillaController implements Serializable {
          }
          
      }
-     
-     
      
 }

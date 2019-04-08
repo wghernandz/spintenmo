@@ -17,7 +17,7 @@
          
      <h:panelGrid id="grid-payment-table">
          <p:commandButton id="finalizartodo" type="button" value="FINALIZAR TODO" style="margin-left: 1100px;" onclick="PF('confirmfin').show();" disabled="#{ordenesAsignadasController.operacionesordentList==null or ordenesAsignadasController.obtenerRole()==4}"/>
-         <p:dataTable  id="tbl" var="orden" value="#{ordenesAsignadasController.operacionesordentList}"
+    <p:dataTable  id="tbl" var="orden" value="#{ordenesAsignadasController.operacionesordentList}"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
                  paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otasigTable" 
                  emptyMessage="No Ordenes found with given criteria" filteredValue="#{ordenesAsignadasController.filteredOtasig}">
@@ -51,11 +51,16 @@
             <h:outputText value="#{orden.ordentrabajo.placa}" />
         </p:column>
         
-        <p:column>
+        <p:column filterBy="#{orden.estado}" headerText="Estado" footerText="contains" filterMatchMode="contains">
             <f:facet name="header">
                 <h:outputText value="Estado" />
             </f:facet>
+         <p:commandLink update=":historialant" oncomplete="PF('dlg-h').show();" action="#{ordenesAsignadasController.historialant(orden)}" rendered="#{orden.estado=='Complemento'}" >
             <h:outputText value="#{orden.estado}" />
+         </p:commandLink>
+          <p:commandLink update=":otraasignacion" oncomplete="PF('otraasig').show();" action="#{ordenesAsignadasController.setOrdenAcopiar(orden)}" rendered="#{orden.estado!='Complemento'}" >
+            <h:outputText value="#{orden.estado}" />
+         </p:commandLink>
         </p:column>
              
         <p:column>
@@ -69,8 +74,8 @@
             <f:facet name="header">
                 <h:outputText value="Operario" />
             </f:facet>
-            <p:commandLink update=":form3" oncomplete="PF('dlg4').show();" action="#{ordenesAsignadasController.listarOperario(orden)}">
-            <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido} "/>
+            <p:commandLink update=":form3" oncomplete="PF('dlg4').show();" action="#{ordenesAsignadasController.listarOperario(orden)}" disabled="#{orden.estado=='Complemento'}">
+            <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido} " />
             </p:commandLink>
         </p:column> 
                         
@@ -124,7 +129,7 @@
             </h:outputText>
         </p:column>
             
-             <p:column exportable="false">
+        <p:column exportable="false">
             <f:facet name="header">
                 <h:outputText value="Comprobante para pago" />
             </f:facet>
@@ -176,7 +181,7 @@
                     </f:facet>
                         <h:outputText value="Monto $"/>
                         <p:inputNumber id="monto" binding="#{montoComponent}" value="#{ordenesAsignadasController.anticipomo.montoanticipo}" decimalPlaces="2"
-                                       minValue="0.00" maxValue="#{ordenesAsignadasController.operacionesordent.montopendiente}" disabled="#{ordenesAsignadasController.check == true or ordenesAsignadasController.operacionesordent.estado=='Anticipo' or ordenesAsignadasController.obtenerRole()==4}" required="true">  
+                                       minValue="0.00" maxValue="#{ordenesAsignadasController.operacionesordent.montopendiente}" disabled="#{ordenesAsignadasController.check == true or ordenesAsignadasController.operacionesordent.estado=='Anticipo'}" required="true">  
                         </p:inputNumber>
         
                         <h:outputText value="Monto pendiente $"/>
@@ -251,6 +256,112 @@
                         </p:panelGrid>
                     </h:form>
                 </p:dialog>
+            
+                <p:dialog header="Historial Anticipos" id="historial" widgetVar="dlg-h" showEffect="explode" hideEffect="bounce" height="400" width="700" closable="true">
+                    <h:form id="historialant">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="MONTO"/>
+                        <h:inputText value="#{ordenesAsignadasController.operacionesordent.montomo}" readonly="true">
+                            <f:convertNumber type="number" pattern="$ 0.00"/>
+                        </h:inputText>
+                    </h:panelGrid>
+                    <h:panelGrid cellpadding="3">
+                    <p:dataTable var="ant" value="#{ordenesAsignadasController.pagosanteriores}">
+                        <p:column headerText="Nombre Operario">
+                            <h:outputText value="#{ant.operacionesordent.empleadomo.persona.primernombre} 
+                                          #{ant.operacionesordent.empleadomo.persona.segundonombre}
+                                          #{ant.operacionesordent.empleadomo.persona.primerapellido} #{ant.operacionesordent.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.codigo}" />
+                        </p:column>
+ 
+                        <p:column headerText="Aseguradora">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" />
+                        </p:column>
+                        
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.placa}" />
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Pago de Anticipo">
+                            <h:outputText value="#{ant.fechaaplicacionplanilla}" >
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Monto Anticipado">
+                            <h:outputText value="#{ant.montoanticipo}" >
+                                 <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:columnGroup type="footer" >
+                            <p:row>
+                            <p:column colspan="5" style="text-align:right" footerText="Total Anticipos:" />
+                            <p:column style="text-align:left" footerText="$ #{ordenesAsignadasController.sumatoriaanticipos}"  />
+                            </p:row>
+                             <p:row>
+                            <p:column colspan="5" style="text-align:right" footerText="Monto Pendiente" />
+                            <p:column style="text-align:left" footerText="$ #{ordenesAsignadasController.montop}"  />
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                        
+                        <h:outputText value="REASIGNAR OPERARIO"></h:outputText>
+                        <p:selectOneMenu id="operario" value="#{ordenesAsignadasController.persona.id}" style="width:200px" required="true" >
+                                <f:selectItems value="#{ordenesAsignadasController.personacargo}" var="micargo" itemLabel="#{micargo.primernombre} #{micargo.segundonombre} #{micargo.primerapellido} #{micargo.segundoapellido}" itemValue="#{micargo.id}" />
+                        </p:selectOneMenu>
+                        
+                        <p:commandButton value="REASIGNAR" id="cambiar" icon="ui-icon-disk" 
+                                         action="#{ordenesAsignadasController.reasignarOperario()}" update=":form:tbl" oncomplete="PF('dlg-h').hide()" onsuccess=":mismsg" >
+                        </p:commandButton>
+                            <p:spacer></p:spacer>
+                        <p:commandButton value="CANCELAR" id="cancel" onclick="dlg-h.hide();" immediate="true" update="cambiarmonto"/>  
+                        
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
+                <p:dialog header="Crear Otra Asignacion" id="asigotro" widgetVar="otraasig" showEffect="explode" hideEffect="bounce" height="400" width="500" closable="true">
+                    <h:form id="otraasignacion">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="CODIGO"/>
+                        <h:inputText value="#{ordenesAsignadasController.operacionesordent.ordentrabajo.codigo}" readonly="true">
+                        </h:inputText>
+                        <h:outputText value="TIPO DE OPERACION"/>
+                        <h:inputText value="#{ordenesAsignadasController.operacionesordent.tipooperaciones}" readonly="true">
+                        </h:inputText>
+                          <h:outputText value="PLACA"/>
+                        <h:inputText value="#{ordenesAsignadasController.operacionesordent.ordentrabajo.placa}" readonly="true">
+                        </h:inputText>
+                        <h:outputText value="MONTO"/>
+                        <h:inputText value="#{ordenesAsignadasController.operacionesordent.montomo}" readonly="true">
+                            <f:convertNumber type="number" pattern="$ 0.00"/>
+                        </h:inputText>
+                    </h:panelGrid>
+                    <h:panelGrid cellpadding="3">
+                        
+                        <h:outputText value="SELECCIONAR OPERARIO"></h:outputText>
+                        <p:selectOneMenu id="operario" value="#{ordenesAsignadasController.persona.id}" style="width:200px" required="true" >
+                                <f:selectItems value="#{ordenesAsignadasController.personacargo}" var="micargo" itemLabel="#{micargo.primernombre} #{micargo.segundonombre} #{micargo.primerapellido} #{micargo.segundoapellido}" itemValue="#{micargo.id}" />
+                        </p:selectOneMenu>
+                        
+                        <h:outputText value="MONTO"/>
+                        <p:inputNumber value="#{ordenesAsignadasController.operacionesordent.montomo}" decimalPlaces="2"    />
+                        
+                        <p:commandButton value="CREAR" id="cambiar" icon="ui-icon-disk" 
+                                         action="#{ordenesAsignadasController.crearOtraAsignacion()}" update=":form:tbl" oncomplete="PF('otraasig').hide()" onsuccess=":mismsg" >
+                        </p:commandButton>
+                            <p:spacer></p:spacer>
+                        <p:commandButton value="CANCELAR" id="cancel" onclick="otraasig.hide();" immediate="true" update="cambiarmonto"/>  
+                        
+                    </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
+                
                 
                 
             </ui:define>

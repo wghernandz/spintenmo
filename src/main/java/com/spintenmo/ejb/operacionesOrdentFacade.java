@@ -53,7 +53,6 @@ public class operacionesOrdentFacade extends AbstractFacade<operacionesOrdent> i
         List<operacionesOrdent> lista= query.getResultList();
       if (!lista.isEmpty()){
           opordent=lista.get(0);
-          System.out.println("POOTA "+opordent.getId());
       }
       
       }catch (Exception e){
@@ -340,4 +339,102 @@ public class operacionesOrdentFacade extends AbstractFacade<operacionesOrdent> i
        System.out.println(e.getMessage());
       } 
     }
+    
+    //obtener lista de ordenes pagadas o anticipos de acuerdo a una placa dada.
+    @Override
+    public List<operacionesOrdent> otpagadaXplaca(String placa,String tipoop,String estado){
+     
+      if(tipoop==null){
+          tipoop="";
+      }
+      if (estado==null){
+          estado="";
+      }
+      List<operacionesOrdent> lista = null;
+      operacionesOrdent operacionesordent=null;
+      String consulta;
+      try{
+        consulta="SELECT op FROM operacionesOrdent op WHERE op.ordentrabajo.placa LIKE ?1 AND (op.estado = ?3 AND op.tipooperaciones = ?2) ORDER BY op.fechapago DESC";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1,"%"+placa+"%");
+        query.setParameter(2,tipoop);
+        query.setParameter(3,estado);
+      
+        lista = query.getResultList();
+        
+          if (!lista.isEmpty()){
+            operacionesordent=lista.get(0);   
+        }
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }
+    
+    //obtener ordenes segun cualquier estado, no importando la fecha mostrar agrupado por empleado y sumarizado ademas por tipo de operacion
+    @Override
+    public List<operacionesOrdent> otEstadoOperacion(String estado,String operacion){
+      List<operacionesOrdent> lista = null;
+      String consulta;
+      String consulta2;
+      String parametro;
+      try{
+      if ("todas".equals(operacion)){
+          parametro=" ";
+      }else{
+          parametro=" AND op.tipooperaciones = ?1"; 
+      }
+      
+        if(estado.equals("Preplanilla")==true){
+           System.out.println("PREPLANILLA");
+           consulta="SELECT op FROM operacionesOrdent op WHERE (op.estado = 'Finalizado' OR op.estado='Anticipo')" +parametro+ " ORDER BY op.empleadomo.persona.id,op.fechaasignado DESC";
+           Query query=em.createQuery(consulta);
+           if(!"todas".equals(operacion)){
+            query.setParameter(1, operacion);
+           }
+           lista = query.getResultList();
+           
+        }else{
+           System.out.println("NO PREPLANILLA");
+           consulta2="SELECT op FROM operacionesOrdent op WHERE op.estado = ?2 "+parametro+" ORDER BY op.empleadomo.persona.id,op.fechaasignado DESC";
+           Query query2=em.createQuery(consulta2);
+           if(!"todas".equals(operacion)){
+                query2.setParameter(1,operacion);
+           }
+           query2.setParameter(2,estado);
+           
+           lista = query2.getResultList();
+        }
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }
+    
+    
+     //obtener operaciones segun ESTADO -Costo Asignado,Operario Asignado,Complemento,Anticipo,Finalizado,Reasignada.
+    @Override
+    public List<operacionesOrdent> otEstadosvarios(){
+      List<operacionesOrdent> lista = null;
+      String consulta;
+      try{
+        consulta="SELECT op FROM operacionesOrdent op WHERE op.estado = ?1 or op.estado = ?2 or op.estado = ?3 or op.estado = ?4 or op.estado = ?5 or op.estado = ?6";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1, "Operario Asignado");
+        query.setParameter(2, "Complemento");
+        query.setParameter(3, "Costo asignado");
+        query.setParameter(4,"Anticipo");
+        query.setParameter(5, "Finalizado");
+        query.setParameter(6,"Reasignada");
+      
+        lista = query.getResultList();
+        System.out.println("AQUI"+lista.get(0).getMontomo().toString());
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }
+    
 }

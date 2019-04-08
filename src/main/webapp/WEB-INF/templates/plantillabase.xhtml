@@ -59,24 +59,24 @@
                  <p:separator />
                  <p:menuitem value="Eliminar" url="/operativo/eliminar.xhtml" />
             </p:submenu>
-            <p:menuitem value="Complemento de Orden" url="/operativo/complementoorden.xhtml" icon="ui-icon-folder-open" />
             <p:menuitem value="Vehiculos" url="/operativo/vehiculos.xhtml" icon="ui-icon-folder-open" />
             <p:menuitem value="Colores Vehic." url="/operativo/colores.xhtml" icon="ui-icon-folder-open" />
             <p:menuitem value="Clientes" url="/operativo/clientes.xhtml" icon="ui-icon-folder-open" />
             <p:menuitem value="Reportes OT" url="/operativo/reportesot.xhtml" icon="ui-icon-folder-open" />
         </p:submenu>
  
-        <p:submenu label="Costo MO" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1}">
+        <p:submenu label="Costo MO" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}">
             <p:menuitem value="Asignar Costo" url="/gerente/establecimientoCostosmo.xhtml" icon="ui-icon-folder-open" />
-            <p:menuitem value="Costos MO Asignados" url="/gerente/costosmoAsignado.xhtml" icon="ui-icon-folder-open" />
-            <p:menuitem value="Reportes" url="/gerente/reportesg.xhtml" icon="ui-icon-folder-open" />
+            <p:menuitem value="Costos MO Asignados" url="/gerente/costosmoAsignado.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1}" />
+            <p:menuitem value="Reportes" url="/gerente/reportesg.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1}" />
         </p:submenu>
  
-        <p:submenu label="Asignacion de Operarios" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==4 or plantillaController.obtenerRole()==1}">
+        <p:submenu label="Asignacion de Operarios" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==4 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==3}">
            <p:menuitem value="Ordenes por Asignar" url="/jefetaller/listaOrdenesporasignar.xhtml" icon="ui-icon-folder-open" />
            <p:menuitem value="Ordenes Asignadas" url="/jefetaller/ordenesAsignadas.xhtml" icon="ui-icon-folder-open" />
-           <p:menuitem value="Ordenes Planilla" url="/jefetaller/ordenesPlanilla.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1}"  />
-           <p:menuitem value="Reportes OT" url="/jefetaller/reportesotj.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1}" />
+           <p:menuitem value="Ordenes Planilla" url="/jefetaller/ordenesPlanilla.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}"  />
+           <p:menuitem value="Consultas OT Pagadas" url="/jefetaller/consultasot.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}"  />
+           <p:menuitem value="Reportes OT" url="/jefetaller/reportesotj.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}" />
         </p:submenu>
         
          <p:submenu label="Planilla" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==5 or plantillaController.obtenerRole()==1}">

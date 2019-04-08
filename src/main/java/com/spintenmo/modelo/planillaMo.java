@@ -55,6 +55,8 @@ public class planillaMo implements Serializable {
     private BigDecimal subtotalgravado;
     @Column(name="estado")
     private String estado;
+    @Column(name="vacacion")
+    private String vacacion;
 
     public int getId() {
         return id;
@@ -158,6 +160,14 @@ public class planillaMo implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getVacacion() {
+        return vacacion;
+    }
+
+    public void setVacacion(String vacacion) {
+        this.vacacion = vacacion;
     }
     
 }

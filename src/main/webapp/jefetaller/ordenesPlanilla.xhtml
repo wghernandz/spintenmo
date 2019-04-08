@@ -32,8 +32,10 @@
         <p:column filterBy="#{orden.ordentrabajo.codigo}" headerText="Codigo" filterMatchMode="contains">
             <f:facet name="header">
                 <h:outputText value="Codigo Orden" />
-            </f:facet>  
+            </f:facet>
+            <p:commandLink update=":historialant" oncomplete="PF('dlg-h').show();" action="#{otapagarPlanilla.historialant(orden.id)}" disabled="#{orden.montomo.compareTo(orden.montopendiente)==0}" >
             <h:outputText value="#{orden.ordentrabajo.codigo}" />
+            </p:commandLink>
         </p:column>
         
         <p:column filterBy="#{orden.ordentrabajo.placa}" headerText="Placa" filterMatchMode="contains">
@@ -162,8 +164,10 @@
         <p:column filterBy="#{anticipo.operacionesordent.ordentrabajo.codigo}" headerText="Codigo" filterMatchMode="contains">
             <f:facet name="header">
                 <h:outputText value="Codigo Orden" />
-            </f:facet>  
+            </f:facet>
+            <p:commandLink update=":historialant" oncomplete="PF('dlg-h').show();" action="#{otapagarPlanilla.historialant(anticipo.operacionesordent)}" disabled="#{anticipo.operacionesordent.montomo.compareTo(anticipo.operacionesordent.montopendiente)==0}" >
             <h:outputText value="#{anticipo.operacionesordent.ordentrabajo.codigo}" />
+            </p:commandLink>
         </p:column>
             
         <p:column filterBy="#{anticipo.operacionesordent.ordentrabajo.placa}" headerText="Placa" filterMatchMode="contains">
@@ -249,7 +253,7 @@
             <f:facet name="header">
                 <h:outputText value="Monto Anticipo" />
             </f:facet>
-            <p:commandLink update=":formAnticipomo" oncomplete="PF('dlganticipo').show();" action="#{otapagarPlanilla.setAnticipomo(anticipo)}">
+            <p:commandLink update=":formAnticipomo" oncomplete="PF('dlganticipo').show();" action="#{otapagarPlanilla.setAnticipomo(anticipo)}" disabled="#{otapagarPlanilla.obtenerRole()==4}">
              #{otapagarPlanilla.acumulateValueAnt(anticipo)}
             <h:outputText value="#{anticipo.montoanticipo}" >
                 <f:convertNumber type="number" pattern="$ 0.00"/>
@@ -333,7 +337,63 @@
                           </f:facet>
                         </h:panelGrid>
                     </h:form>
-            </p:dialog> 
+            </p:dialog>
+                
+                <p:dialog header="Historial Anticipos" id="historial" widgetVar="dlg-h" showEffect="explode" hideEffect="bounce" height="400" width="700" closable="true">
+                    <h:form id="historialant">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="MONTO"/>
+                        <h:inputText value="#{otapagarPlanilla.operacionesordent.montomo}" readonly="true">
+                            <f:convertNumber type="number" pattern="$ 0.00"/>
+                        </h:inputText>
+                    </h:panelGrid>
+                    <h:panelGrid cellpadding="3">
+                    <p:dataTable var="ant" value="#{otapagarPlanilla.pagosanteriores}">
+                        <p:column headerText="Nombre Operario">
+                            <h:outputText value="#{ant.operacionesordent.empleadomo.persona.primernombre} 
+                                          #{ant.operacionesordent.empleadomo.persona.segundonombre}
+                                          #{ant.operacionesordent.empleadomo.persona.primerapellido} #{ant.operacionesordent.empleadomo.persona.segundoapellido}" />
+                        </p:column>
+ 
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.codigo}" />
+                        </p:column>
+ 
+                        <p:column headerText="Aseguradora">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" />
+                        </p:column>
+                        
+                        <p:column headerText="Placa">
+                            <h:outputText value="#{ant.operacionesordent.ordentrabajo.placa}" />
+                        </p:column>
+                        
+                        <p:column headerText="Fecha Pago de Anticipo">
+                            <h:outputText value="#{ant.fechaaplicacionplanilla}" >
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Monto Anticipado">
+                            <h:outputText value="#{ant.montoanticipo}" >
+                                 <f:convertNumber type="number" pattern="$ 0.00"></f:convertNumber>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:columnGroup type="footer" >
+                            <p:row>
+                            <p:column colspan="5" style="text-align:right" footerText="Total Anticipos:" />
+                            <p:column style="text-align:left" footerText="$ #{otapagarPlanilla.sumatoriaanticipos}"  />
+                            </p:row>
+                             <p:row>
+                            <p:column colspan="5" style="text-align:right" footerText="Monto Pendiente" />
+                            <p:column style="text-align:left" footerText="$ #{otapagarPlanilla.montop}"  />
+                            </p:row>
+                        </p:columnGroup>
+                    </p:dataTable>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
                 
             </ui:define>
 

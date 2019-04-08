@@ -23,8 +23,14 @@
                     <f:selectItem itemLabel="Preplanilla" itemValue="Preplanilla"/>
                     <f:selectItem itemLabel="Operario Asignado" itemValue="Operario Asignado"/>
                 </p:selectOneMenu>
+                <h:outputText value="Tipo de Operacion"></h:outputText>
+                <p:selectOneMenu id="to" value="#{tipoop}">
+                    <f:selectItem itemLabel="Todas" itemValue="todas"/>
+                    <f:selectItem itemLabel="Enderezado" itemValue="enderezado"/>
+                    <f:selectItem itemLabel="Pintura" itemValue="pintura"/>
+                </p:selectOneMenu>
                 <p:commandLink id="obtener" value="GENERAR" 
-                 action="#{rptjefetallerController.generarPorEstado(ActionEvent,estado)}" ajax="false" target="_blank"/>
+                 action="#{rptjefetallerController.generarPorEstado(ActionEvent,estado,tipoop)}" ajax="false" target="_blank"/>
             </h:panelGrid>
             </h:form>
         </p:tab>

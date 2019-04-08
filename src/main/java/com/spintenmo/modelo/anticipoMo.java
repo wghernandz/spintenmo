@@ -37,6 +37,8 @@ public class anticipoMo implements Serializable{
     private Date fechaaplicacionplanilla;
     @Column(name="montopendiente")
     private BigDecimal montopendiente;
+    @Column(name="idordentrabajo")
+    private int idordentrabajo;
 
     public int getId() {
         return id;
@@ -77,5 +79,12 @@ public class anticipoMo implements Serializable{
     public void setMontopendiente(BigDecimal montopendiente) {
         this.montopendiente = montopendiente;
     }
-      
+
+    public int getIdordentrabajo() {
+        return idordentrabajo;
+    }
+
+    public void setIdordentrabajo(int idordentrabajo) {
+        this.idordentrabajo = idordentrabajo;
+    }  
 }

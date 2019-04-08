@@ -58,6 +58,7 @@ public class modificarOtController implements Serializable {
     //VARIABLES
     private String codigoot;
     private boolean disabledcodigo;
+    private int tipoorden;
     //LISTAS
     private List<aseguradoraCliente> clientes;
     private List<Marca> marcas;
@@ -233,6 +234,14 @@ public class modificarOtController implements Serializable {
         this.disabledcodigo = disabledcodigo;
     }
 
+    public int getTipoorden() {
+        return tipoorden;
+    }
+
+    public void setTipoorden(int tipoorden) {
+        this.tipoorden = tipoorden;
+    }
+
     //metodo para mostrar ot a modificar
     public void getOtseguncodigo(AjaxBehaviorEvent e){
         String codigo=this.ordentrabajo.getCodigo();
@@ -243,8 +252,10 @@ public class modificarOtController implements Serializable {
         }else{
             this.ordentrabajo=ordenTrabajoEJB.obtenerOt(codigo);
             //Establecer valores guardados en Select y mostrarlos en vista
+            if(ordentrabajo.getModelot()!=null){
             this.marca.setId(ordentrabajo.getModelot().getMarca().getId());
             this.modelo.setId(ordentrabajo.getModelot().getId());
+            }
             if(ordentrabajo.getAniot()!=null){
                this.anio.setId(ordentrabajo.getAniot().getId());
             }
@@ -252,16 +263,36 @@ public class modificarOtController implements Serializable {
             if(ordentrabajo.getColorvehiculo()!=null){
                 this.colorvehiculo.setId(ordentrabajo.getColorvehiculo().getId());
             }
-            this.disabledcodigo=true;      
+            System.out.println("VALOR CODIGO "+codigo.substring(0,4));
+            if(codigo.substring(0,4).equals("COMP")){
+                this.tipoorden=1;
+            }else if(codigo.substring(0,4).equals("PART")){
+                this.tipoorden=2;
+            }else{
+                this.tipoorden=0;
+            }
+            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("principal:tipoord");
+           // this.disabledcodigo=true;      
         }
     }
     
-    //ACTUALIZAR CODIGO SI SE CAMBIA FECHA AUTORIZADO O PLACA
+    //ACTUALIZAR CODIGO SI SE CAMBIA FECHA AUTORIZADO O PLACA O TIPO DE ORDEN
     public void actualizarCodigoOrden(){
-    SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        codigoot=df.format(ordentrabajo.getFechaautorizado());
-        codigoot=ordentrabajo.getPlaca()+"-"+codigoot;
-        ordentrabajo.setCodigo(codigoot);
+        if(ordentrabajo.getFechaautorizado()!=null){
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+            codigoot=df.format(ordentrabajo.getFechaautorizado());
+        }else {codigoot=""; }
+        
+        if(tipoorden==0){ 
+            codigoot=ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+        }else if(tipoorden==1){
+            codigoot="COMP-"+ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+        }else{
+            codigoot="PART-"+ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+            }   
     }
     
     //Metodo para actualizar datos de orden
@@ -275,7 +306,9 @@ public class modificarOtController implements Serializable {
     }else{
          this.ordentrabajo.setAniot(anio);
     }
-    this.ordentrabajo.setModelot(modelo);
+    if(modelo!=null){
+        this.ordentrabajo.setModelot(modelo);
+    }
     this.ordentrabajo.setAseguradoracliente(aseguradoracliente);
     if(this.colorvehiculo.getId()==0){
         this.ordentrabajo.setColorvehiculo(null);

@@ -7,7 +7,9 @@ package com.spintenmo.controller;
 
 import com.spintenmo.ejb.PersonaFacadeLocal;
 import com.spintenmo.ejb.anticipoMoFacadeLocal;
+import com.spintenmo.ejb.empleadoMoFacadeLocal;
 import com.spintenmo.ejb.operacionesOrdentFacadeLocal;
+import com.spintenmo.ejb.ordenTrabajoFacadeLocal;
 import com.spintenmo.modelo.Persona;
 import com.spintenmo.modelo.anticipoMo;
 import com.spintenmo.modelo.empleadoMo;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,11 +62,16 @@ public class ordenesAsignadasController implements Serializable{
     private anticipoMoFacadeLocal anticipomoEJB;
     @EJB
     private PersonaFacadeLocal personaEJB;
+    @EJB
+    private ordenTrabajoFacadeLocal ordentrabajoEJB;
+    @EJB
+    private empleadoMoFacadeLocal empleadomoEJB;
     //LISTAS
     private List<operacionesOrdent> operacionesordentList;
     private List<operacionesOrdent> elementosComprobantepago;
     private List<operacionesOrdent> filteredOtasig;
     private List<Persona> personacargo;
+    private List<anticipoMo> pagosanteriores;
     //ENTIDADES
     private operacionesOrdent operacionesordent;
     private anticipoMo anticipomo;
@@ -71,9 +79,12 @@ public class ordenesAsignadasController implements Serializable{
     private empleadoMo empleadomo;
     private ordenTrabajo ordentrabajo;
     private usuarioRole role;
+    private empleadoMo nuevoempleadomo;
     
     //variables
     private boolean check;
+    private BigDecimal sumatoriaanticipos;
+    private BigDecimal montop;
     //PARA FORMATEAR EXPORTER
     private ExcelOptions excelOpt;
     private PDFOptions pdfOpt;
@@ -225,6 +236,54 @@ public class ordenesAsignadasController implements Serializable{
     public void setRole(usuarioRole role) {
         this.role = role;
     }
+
+    public ordenTrabajoFacadeLocal getOrdentrabajoEJB() {
+        return ordentrabajoEJB;
+    }
+
+    public void setOrdentrabajoEJB(ordenTrabajoFacadeLocal ordentrabajoEJB) {
+        this.ordentrabajoEJB = ordentrabajoEJB;
+    }
+
+    public List<anticipoMo> getPagosanteriores() {
+        return pagosanteriores;
+    }
+
+    public void setPagosanteriores(List<anticipoMo> pagosanteriores) {
+        this.pagosanteriores = pagosanteriores;
+    }
+
+    public BigDecimal getSumatoriaanticipos() {
+        return sumatoriaanticipos;
+    }
+
+    public void setSumatoriaanticipos(BigDecimal sumatoriaanticipos) {
+        this.sumatoriaanticipos = sumatoriaanticipos;
+    }
+
+    public BigDecimal getMontop() {
+        return montop;
+    }
+
+    public void setMontop(BigDecimal montop) {
+        this.montop = montop;
+    }
+
+    public empleadoMoFacadeLocal getEmpleadomoEJB() {
+        return empleadomoEJB;
+    }
+
+    public void setEmpleadomoEJB(empleadoMoFacadeLocal empleadomoEJB) {
+        this.empleadomoEJB = empleadomoEJB;
+    }
+
+    public empleadoMo getNuevoempleadomo() {
+        return nuevoempleadomo;
+    }
+
+    public void setNuevoempleadomo(empleadoMo nuevoempleadomo) {
+        this.nuevoempleadomo = nuevoempleadomo;
+    }
     
     public void actualizarOtAsignadas(){
         operacionesordentList=operacionesordentEJB.otAsignadas();
@@ -292,6 +351,7 @@ public class ordenesAsignadasController implements Serializable{
            
              //GUARDAR ANTICIPO
             this.anticipomo.setOperacionesordent(operacionesordent);
+            this.anticipomo.setIdordentrabajo(operacionesordent.getOrdentrabajo().getId());
             anticipomoEJB.create(anticipomo);
           
             //ACTUALIZAR ESTADO DE ORDEN
@@ -329,13 +389,22 @@ public class ordenesAsignadasController implements Serializable{
        this.setOperacionesordent(opt);
    }
    
-   public void cambiarOperario(){
+   public String cambiarOperario(){
        this.empleadomo.setPersona(persona);
        this.operacionesordent.setEmpleadomo(empleadomo);
       
        //this.operacionesordent.setOrdentrabajo(ordentrabajo);
        operacionesordentEJB.edit(operacionesordent);
-       init();   
+       init();
+        FacesContext.getCurrentInstance().addMessage(
+        null, new FacesMessage("SE CAMBIO OPERARIO"));
+ 
+        FacesContext.getCurrentInstance()
+            .getExternalContext()
+            .getFlash().setKeepMessages(true);
+ 
+        UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
+        return view.getViewId() + "?faces-redirect=true&includeViewParams=true";
    }
    
    public void cambiarMontoneg(){
@@ -406,5 +475,129 @@ public class ordenesAsignadasController implements Serializable{
         this.role= (usuarioRole) context.getExternalContext().getSessionMap().get("mirol");
         return this.role.getId();
     }
-   
+    
+    public void historialant(operacionesOrdent opot){
+        this.setOperacionesordent(operacionesordentEJB.find(opot.getId()));
+        pagosanteriores=anticipomoEJB.anticipoPorOrden(opot);
+        System.out.println("valor pagosanteriores"+pagosanteriores.size());
+        //operario a quien esta asignada la orden
+        this.persona=this.operacionesordent.getEmpleadomo().getPersona();
+        //listar operarios
+        listarOperario(this.getOperacionesordent());
+        //sumar anticipos
+        this.setSumatoriaanticipos(new BigDecimal(0));
+        for(int indice = 0;indice<pagosanteriores.size();indice++)
+        {
+            this.sumatoriaanticipos=this.sumatoriaanticipos.add(pagosanteriores.get(indice).getMontoanticipo());
+        }
+            this.montop=this.getOperacionesordent().getMontomo().subtract(this.sumatoriaanticipos).setScale(2, RoundingMode.HALF_UP);
+        //pagosanteriores=operacionesordentEJB.otpagadaXplaca(placa, tipoop, "Pagada");
+    }
+    
+      public String reasignarOperario(){
+         
+        //empleadoMo nuevoemp=new empleadoMo();
+         operacionesOrdent nuevoop = new operacionesOrdent();
+         nuevoop.setCodigo(this.operacionesordent.getCodigo());
+         //nuevoop.setEmpleadomo(nuevoempleadomo);
+         nuevoop.setEstado(this.operacionesordent.getEstado());
+         nuevoop.setFechaanticipo(this.operacionesordent.getFechaanticipo());
+         nuevoop.setFechaasignado(this.operacionesordent.getFechaasignado());
+         nuevoop.setFechapago(this.operacionesordent.getFechapago());
+         nuevoop.setFechasubido(this.operacionesordent.getFechasubido());
+         nuevoop.setFechaterminado(this.operacionesordent.getFechaterminado());
+         nuevoop.setFechavalorizado(this.operacionesordent.getFechavalorizado());
+         nuevoop.setMontomax(this.operacionesordent.getMontomax());
+         nuevoop.setMontomaxp(this.operacionesordent.getMontomaxp());
+         nuevoop.setMontomin(this.operacionesordent.getMontomin());
+         nuevoop.setMontominp(this.operacionesordent.getMontominp());
+         nuevoop.setMontomo(this.operacionesordent.getMontomo());
+         nuevoop.setMontopendiente(this.operacionesordent.getMontopendiente());
+         nuevoop.setMontoplanilla(this.operacionesordent.getMontoplanilla());
+         nuevoop.setOrdentrabajo(this.operacionesordent.getOrdentrabajo());
+         nuevoop.setRutaenderezado(this.operacionesordent.getRutaenderezado());
+         nuevoop.setRutapintura(this.operacionesordent.getRutapintura());
+         nuevoop.setRutarecibo(this.operacionesordent.getRutarecibo());
+         nuevoop.setTipooperaciones(this.operacionesordent.getTipooperaciones());
+         operacionesordentEJB.create(nuevoop);
+         
+         this.operacionesordent.setEstado("Reasignada");
+         operacionesordentEJB.edit(this.operacionesordent);
+         
+         this.nuevoempleadomo=empleadomoEJB.find(persona.getId());
+         this.operacionesordent=nuevoop;
+         this.operacionesordent.setEmpleadomo(this.nuevoempleadomo);
+         operacionesordentEJB.edit(this.operacionesordent);
+         
+          
+           FacesContext.getCurrentInstance().addMessage(
+        null, new FacesMessage("SE REASIGNO OPERARIO"));
+ 
+        FacesContext.getCurrentInstance()
+            .getExternalContext()
+            .getFlash().setKeepMessages(true);
+ 
+        UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
+        return view.getViewId() + "?faces-redirect=true&includeViewParams=true";
+     }
+     
+     public void setOrdenAcopiar(operacionesOrdent ot){
+         
+         listarOperario(ot);
+     
+     }
+      
+     public String crearOtraAsignacion(){
+     
+           //empleadoMo nuevoemp=new empleadoMo();
+         operacionesOrdent nuevoop = new operacionesOrdent();
+         nuevoop.setCodigo(this.operacionesordent.getCodigo());
+         nuevoop.setEstado(this.operacionesordent.getEstado());
+         nuevoop.setFechaanticipo(this.operacionesordent.getFechaanticipo());
+         nuevoop.setFechaasignado(this.operacionesordent.getFechaasignado());
+         nuevoop.setFechapago(this.operacionesordent.getFechapago());
+         nuevoop.setFechasubido(this.operacionesordent.getFechasubido());
+         nuevoop.setFechaterminado(this.operacionesordent.getFechaterminado());
+         nuevoop.setFechavalorizado(this.operacionesordent.getFechavalorizado());
+         if("enderezado".equals(this.operacionesordent.getTipooperaciones())){
+            nuevoop.setMontomin(this.operacionesordent.getMontomo());
+            nuevoop.setMontomax(this.operacionesordent.getMontomo());
+         }else{
+            nuevoop.setMontominp(null);
+            nuevoop.setMontomaxp(null);
+         }
+         if("pintura".equals(this.operacionesordent.getTipooperaciones())){
+            nuevoop.setMontominp(this.operacionesordent.getMontomo());
+            nuevoop.setMontomaxp(this.operacionesordent.getMontomo());
+         }else{
+            nuevoop.setMontomin(this.operacionesordent.getMontomo());
+            nuevoop.setMontomax(this.operacionesordent.getMontomo());
+         }
+         
+         nuevoop.setMontomo(this.operacionesordent.getMontomo());
+         nuevoop.setMontopendiente(this.operacionesordent.getMontomo());
+         nuevoop.setMontoplanilla(this.operacionesordent.getMontoplanilla());
+         nuevoop.setOrdentrabajo(this.operacionesordent.getOrdentrabajo());
+         nuevoop.setRutaenderezado(this.operacionesordent.getRutaenderezado());
+         nuevoop.setRutapintura(this.operacionesordent.getRutapintura());
+         nuevoop.setRutarecibo(this.operacionesordent.getRutarecibo());
+         nuevoop.setTipooperaciones(this.operacionesordent.getTipooperaciones());
+         operacionesordentEJB.create(nuevoop);
+         
+         this.nuevoempleadomo=empleadomoEJB.find(persona.getId());
+         this.operacionesordent=nuevoop;
+         this.operacionesordent.setEmpleadomo(this.nuevoempleadomo);
+         operacionesordentEJB.edit(this.operacionesordent);
+         
+          FacesContext.getCurrentInstance().addMessage(
+        null, new FacesMessage("SE CREO OTRA ASIGNACION"));
+ 
+        FacesContext.getCurrentInstance()
+            .getExternalContext()
+            .getFlash().setKeepMessages(true);
+ 
+        UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
+        return view.getViewId() + "?faces-redirect=true&includeViewParams=true";
+     }
+     
 }

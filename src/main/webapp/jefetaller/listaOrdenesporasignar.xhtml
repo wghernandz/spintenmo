@@ -11,9 +11,9 @@
         
         <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
             <ui:define name="content">
-                <h:form id="form" >
+        <h:form id="form" >
                  <p:poll interval="5" listener="#{otPorasignarController.init()}" update="tbl" />
-                    <p:dataTable id="tbl" var="orden" value="#{otPorasignarController.opporasignar}"
+        <p:dataTable id="tbl" var="orden" value="#{otPorasignarController.opporasignar}"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
                  paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
                  emptyMessage="No Operaciones found with given criteria" filteredValue="#{otPorasignarController.filteredOpporasignar}">

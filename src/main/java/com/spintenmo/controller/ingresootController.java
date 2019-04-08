@@ -63,6 +63,7 @@ public class ingresootController implements Serializable {
     private Date fautorizado;
     private String codigoot;
     private Date fecha;
+    private int tipoorden;
 
     //LISTAS
     private List<aseguradoraCliente> clientes;
@@ -277,18 +278,36 @@ public class ingresootController implements Serializable {
     public void setUltimasordenes(List<ordenTrabajo> ultimasordenes) {
         this.ultimasordenes = ultimasordenes;
     }
+
+    public int getTipoorden() {
+        return tipoorden;
+    }
+
+    public void setTipoorden(int tipoorden) {
+        this.tipoorden = tipoorden;
+    }
     
-    public void asignarCodigoOt(){ 
-   
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        codigoot=df.format(ordentrabajo.getFechaautorizado());
-        codigoot=ordentrabajo.getPlaca()+"-"+codigoot;
-        ordentrabajo.setCodigo(codigoot);
+    public void asignarCodigoOt(){
+        
+        if(ordentrabajo.getFechaautorizado()!=null){
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+            codigoot=df.format(ordentrabajo.getFechaautorizado());
+        }else {codigoot=""; }
+        
+        if(tipoorden==0){ 
+            codigoot=ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+        }else if(tipoorden==1){
+            codigoot="COMP-"+ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+        }else{
+            codigoot="PART-"+ordentrabajo.getPlaca()+"-"+codigoot;
+            ordentrabajo.setCodigo(codigoot);
+            }   
     }
     
     public String registrarOrden(){
-       //Dependiendo del tipo de orden, el codigo debe ser diferente, algunos campos pueden ir null, etc.
-        
+       //Dependiendo del tipo de orden, el codigo debe ser diferente, algunos campos pueden ir null, etc. 
        try{
            //verificar colorvehiculo y anio
            if(this.colorvehiculo.getId()!=0){
@@ -329,7 +348,8 @@ public class ingresootController implements Serializable {
                 return view.getViewId() + "?faces-redirect=true&includeViewParams=true";
        
        }
-    } 
+    }
+    
     public String cancelar(){
         UIViewRoot view=FacesContext.getCurrentInstance().getViewRoot();
         return view.getViewId()+"?faces-redirect=true&includeViewParams=true";
@@ -369,7 +389,7 @@ public class ingresootController implements Serializable {
                       FacesContext.getCurrentInstance()
                         .getExternalContext()
                         .getFlash().setKeepMessages(true);
-                }
+                    }
                 
     }
     

@@ -61,6 +61,11 @@ public interface operacionesOrdentFacadeLocal {
     
     List<operacionesOrdent> otEstado(String estado);
     
+    List<operacionesOrdent> otEstadoOperacion(String estado, String operacion);
+    
     void finalizarTodo();
+    
+    List<operacionesOrdent> otpagadaXplaca(String placa,String tipoop, String estado); 
    
+    List<operacionesOrdent> otEstadosvarios();
 }

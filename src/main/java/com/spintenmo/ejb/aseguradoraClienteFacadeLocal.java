@@ -30,4 +30,5 @@ public interface aseguradoraClienteFacadeLocal {
 
     int count();
     
+    aseguradoraCliente clienteSegunNombre(String nombrecliente);
 }

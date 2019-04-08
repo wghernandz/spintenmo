@@ -23,6 +23,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
@@ -125,10 +126,11 @@ public class imprimirPlanillaController implements Serializable {
         
         File jasper= new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/reportes/planilla_all.jasper"));
         //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(),new HashMap(),new JRBeanCollectionDataSource(elementosComprobantepago,false));
-        
+        String ruta=FacesContext.getCurrentInstance().getExternalContext().getRealPath("/reportes/jc.png");
+        System.out.println("VALOR DE RUTA"+ruta);
         HashMap params = new HashMap();
         params.put("descuentos",descuentosemp);
-        params.put("imgdir","\\src\\main\\webapp\\reportes\\");//ruta imagen
+        params.put("imgdir",ruta);//ruta imagen
         
         
         byte[] bytes=JasperRunManager.runReportToPdf(jasper.getPath(),params,new JRBeanCollectionDataSource(planillagenerada,false));
@@ -156,10 +158,11 @@ public class imprimirPlanillaController implements Serializable {
         
         File jasper= new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/reportes/planilla_all.jasper"));
         //JasperPrint jasperPrint = JasperFillManager.fillReport(jasper.getPath(),new HashMap(),new JRBeanCollectionDataSource(elementosComprobantepago,false));
-        
+        String ruta=FacesContext.getCurrentInstance().getExternalContext().getRealPath("/reportes/jc.png");
+        System.out.println("VALOR DE RUTA"+ruta);
         HashMap params = new HashMap();
         params.put("descuentos",descuentosemp);
-        params.put("imgdir","\\src\\main\\webapp\\reportes\\");//ruta imagen
+        params.put("imgdir",ruta);//ruta imagen
         
       
         byte[] bytes=JasperRunManager.runReportToPdf(jasper.getPath(),params,new JRBeanCollectionDataSource(planillagenerada,false));

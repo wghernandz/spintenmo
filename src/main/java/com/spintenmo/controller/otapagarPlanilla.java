@@ -12,8 +12,10 @@ import com.spintenmo.modelo.anticipoMo;
 import com.spintenmo.modelo.operacionesOrdent;
 import com.spintenmo.modelo.ordenTrabajo;
 import com.spintenmo.modelo.planillaMo;
+import com.spintenmo.modelo.usuarioRole;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -46,13 +48,15 @@ public class otapagarPlanilla implements Serializable{
     private operacionesOrdent operacionesordent;
     private ordenTrabajo ordentrabajo;
     private anticipoMo anticipomo;
-    
+    private usuarioRole role; 
+    private BigDecimal sumatoriaanticipos;
+    private BigDecimal montop;
     //LISTAS
     private List<operacionesOrdent> otpreplanilla;
     private List<anticipoMo> anticipopreplanilla;
     private List<operacionesOrdent> filteredOtpreplanilla;
     private List<anticipoMo> filteredAnticipopreplanilla;
-    
+    private List<anticipoMo> pagosanteriores;
     //variables
     private String valorestado;
     private BigDecimal acumulatorAux= new BigDecimal(0);
@@ -201,6 +205,38 @@ public class otapagarPlanilla implements Serializable{
     public void setPdfOpt(PDFOptions pdfOpt) {
         this.pdfOpt = pdfOpt;
     }
+
+    public usuarioRole getRole() {
+        return role;
+    }
+
+    public void setRole(usuarioRole role) {
+        this.role = role;
+    }
+
+    public BigDecimal getSumatoriaanticipos() {
+        return sumatoriaanticipos;
+    }
+
+    public void setSumatoriaanticipos(BigDecimal sumatoriaanticipos) {
+        this.sumatoriaanticipos = sumatoriaanticipos;
+    }
+
+    public BigDecimal getMontop() {
+        return montop;
+    }
+
+    public void setMontop(BigDecimal montop) {
+        this.montop = montop;
+    }
+
+    public List<anticipoMo> getPagosanteriores() {
+        return pagosanteriores;
+    }
+
+    public void setPagosanteriores(List<anticipoMo> pagosanteriores) {
+        this.pagosanteriores = pagosanteriores;
+    }
     
     //Modificar Anticipo antes de la aplicacion correspondiente
     public void modificarAnticipomo(){
@@ -278,4 +314,24 @@ public class otapagarPlanilla implements Serializable{
         pdfOpt.setCellFontSize("8");
         pdfOpt.setFacetFontSize("10");
     }
+    
+      public int obtenerRole(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        this.role= (usuarioRole) context.getExternalContext().getSessionMap().get("mirol");
+        return this.role.getId();
+    }
+    
+        public void historialant(operacionesOrdent idopt){
+        this.setOperacionesordent(operacionesordentEJB.find(idopt));
+        pagosanteriores=anticipomoEJB.anticipoPorOrden(idopt);
+        //sumar anticipos
+        this.setSumatoriaanticipos(new BigDecimal(0));
+        for(int indice = 0;indice<pagosanteriores.size();indice++)
+        {
+            this.sumatoriaanticipos=this.sumatoriaanticipos.add(pagosanteriores.get(indice).getMontoanticipo());
+        }
+            this.montop=this.getOperacionesordent().getMontomo().subtract(this.sumatoriaanticipos).setScale(2, RoundingMode.HALF_UP);
+        //pagosanteriores=operacionesordentEJB.otpagadaXplaca(placa, tipoop, "Pagada");
+    }
+   
 }

@@ -6,6 +6,7 @@
 package com.spintenmo.ejb;
 
 import com.spintenmo.modelo.anticipoMo;
+import com.spintenmo.modelo.operacionesOrdent;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -52,19 +53,20 @@ public class anticipoMoFacade extends AbstractFacade<anticipoMo> implements anti
     
     //Conocer si una operacionorden tiene anticipos aplicados en planilla.  
     @Override
-    public List<anticipoMo> anticipoPorOrden(int idoperacionot){
+    public List<anticipoMo> anticipoPorOrden(operacionesOrdent opot){
       List<anticipoMo> lista = null;
       //select * from anticipomo an,operacionesordent op where op.id=an.idoperacionesot and an.idoperacionesot=943 and fechaaplicacionplanilla is not null limit 1
      
       try{
         String consulta;
-        consulta="SELECT an FROM anticipoMo an, operacionesordent op WHERE op.id=an.operacionesordent.id AND "
-                + "an.operacionesordent.id = ?1 AND an.fechaaplicacion!=NULL";
+        consulta="SELECT an FROM anticipoMo an, operacionesOrdent op WHERE op.id=an.operacionesordent.id AND "
+                + " an.fechaaplicacionplanilla!=NULL AND an.idordentrabajo = ?1 ";
         Query query=em.createQuery(consulta);
+        query.setParameter(1, opot.getOrdentrabajo().getId());
         
         lista = query.getResultList();
     
-      }catch (Exception e){
+      }catch (Exception e){ 
        System.out.println(e.getMessage());
       }
       return lista;

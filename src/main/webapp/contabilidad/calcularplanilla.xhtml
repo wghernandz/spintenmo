@@ -166,6 +166,12 @@
                             <f:convertDateTime pattern="dd-MM-yyyy" />
                             </h:outputText>
                         </p:column>
+                    
+                        <p:column headerText="Vacacion">
+                            <p:commandLink update=":formvaca:vacapanel" oncomplete="PF('vaca').show();" action="#{calcularPlanillaController.setPlanillamo(pmox)}">
+                                           <h:outputText value="#{pmox.vacacion}"/>
+                            </p:commandLink>
+                        </p:column>
                         
                         <p:column headerText="Dias Laborados">
                             <p:commandLink update=":form2:ordenDetail" oncomplete="PF('Dias').show();" action="#{calcularPlanillaController.setPlanillamo(pmox)}" >
@@ -249,7 +255,7 @@
                
                 </p:outputPanel>
     </h:form>    
-        </p:dialog>
+    </p:dialog>
     
     <p:dialog header="Cambiar Monto de Descuento" id="descuento" widgetVar="dlgDescuento" showEffect="explode" hideEffect="bounce" height="150" width="400" closable="false">
     <h:form id="form3">
@@ -285,6 +291,26 @@
             <p:commandButton value="NO" id="cancel" onclick="confirmar.hide();" immediate="true"/>
            </p:panelGrid>
         </h:form>
+    </p:dialog>
+                
+    <p:dialog header="Vacacion" id="vaca" widgetVar="vaca" showEffect="explode" hideEffect="bounce" height="125" width="350" closable="false">
+    <h:form id="formvaca">
+        <p:growl id="mismsg" />
+                <p:outputPanel id="vacapanel" style="text-align:center;">
+                  
+                <p:panelGrid columns="2" >
+                <h:outputText value="Esta de Vacacion el operario?"/>
+                <p:selectOneMenu value="#{calcularPlanillaController.planillamo.vacacion}">
+                    <f:selectItem  itemValue="NO" itemLabel="NO"/>
+                    <f:selectItem  itemValue="SI" itemLabel="SI"/>
+                </p:selectOneMenu>
+                <p:commandButton value="ACEPTAR" icon="ui-icon-disk" action="#{calcularPlanillaController.emplVacacion}" 
+                                  onsuccess=":mismsg" >
+                </p:commandButton>    
+                <p:commandButton value="CANCELAR" id="cancel" onclick="vaca.hide();" immediate="true"/>
+                </p:panelGrid>
+                </p:outputPanel>
+    </h:form>    
     </p:dialog>
                 
             </ui:define>

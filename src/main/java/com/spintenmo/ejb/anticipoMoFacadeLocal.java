@@ -6,6 +6,7 @@
 package com.spintenmo.ejb;
 
 import com.spintenmo.modelo.anticipoMo;
+import com.spintenmo.modelo.operacionesOrdent;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.ejb.Local;
@@ -33,5 +34,5 @@ public interface anticipoMoFacadeLocal {
     
     BigDecimal sumAnticipoOrden(int idoperacionesordent);
     
-    List<anticipoMo> anticipoPorOrden(int idoperacionesordent);
+    List<anticipoMo> anticipoPorOrden(operacionesOrdent operacionesordent);
 }
