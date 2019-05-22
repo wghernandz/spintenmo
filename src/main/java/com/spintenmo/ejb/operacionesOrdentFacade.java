@@ -5,6 +5,7 @@
  */
 package com.spintenmo.ejb;
 
+import com.spintenmo.modelo.Aux_detallepagoorden;
 import com.spintenmo.modelo.Usuario;
 import com.spintenmo.modelo.anticipoMo;
 import com.spintenmo.modelo.empleadoMo;
@@ -15,8 +16,10 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 /**
  *
@@ -435,6 +438,111 @@ public class operacionesOrdentFacade extends AbstractFacade<operacionesOrdent> i
        System.out.println(e.getMessage());
       }
       return lista;
+    }
+    
+        //obtener ot pagadas, tambien si como si ha tenido anticipos o fue reasignada
+    @Override
+    public List<Aux_detallepagoorden> otPagadasdetalle(int ordenabuscar, String toperacion){
+     
+      List<Aux_detallepagoorden> lista=null;
+      String consulta;
+      
+      //EJECUTAR PROCEDIMIENTO ALMACENADO
+      StoredProcedureQuery storedProcedure=em.createStoredProcedureQuery("detallepagosordent");
+      storedProcedure.registerStoredProcedureParameter("ordenabuscar", Integer.class, ParameterMode.IN);
+      storedProcedure.registerStoredProcedureParameter("tipoop", String.class, ParameterMode.IN);
+      storedProcedure.setParameter("ordenabuscar", ordenabuscar);
+      storedProcedure.setParameter("tipoop",toperacion);
+      storedProcedure.execute();
+      //OBTENER DATOS DE TABLA GENERADA POR PROCEDIMIENTO ALMACENADO.
+      try{
+        consulta="SELECT a FROM Aux_detallepagoorden a";
+        Query query=em.createQuery(consulta);
+        
+        lista = query.getResultList();
+    
+      }catch (Exception e){
+        System.out.println(e.getMessage());
+      }
+      return lista;
+    }
+    
+    
+        
+    //obtener orden pagada por placa.
+    @Override
+    public operacionesOrdent otpagadaPlaca(String placa,String tipoop,String estado){
+     
+      if(tipoop==null){
+          tipoop="";
+      }
+      if (estado==null){
+          estado="";
+      }
+      List<operacionesOrdent> lista = null;
+      operacionesOrdent operacionesordent=null;
+      String consulta;
+      
+      System.out.println("VALORES "+placa+" "+tipoop+" "+estado);
+      try{
+        consulta="SELECT op FROM operacionesOrdent op WHERE op.ordentrabajo.placa LIKE ?1 AND (op.estado = ?3 AND op.tipooperaciones = ?2) ORDER BY op.fechapago DESC";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1,"%"+placa+"%");
+        query.setParameter(2,tipoop);
+        query.setParameter(3,estado);
+      
+        lista = query.getResultList();
+        
+        System.out.println("VALORES "+lista.size());
+        System.out.println("VALORES "+!lista.isEmpty());
+        if (!lista.isEmpty()){
+            operacionesordent=lista.get(0);
+            System.out.println("VALORES dentro IF "+lista.size()+" " +lista.get(0).getOrdentrabajo());
+        }
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      //System.out.println("VALORES a retornar "+operacionesordent.getId());
+      return operacionesordent;
+    }
+    
+    //obtener orden pagada por id de orden
+    @Override
+    public operacionesOrdent otpagadaIdorden(int id,String tipoop,String estado){
+     
+      if(tipoop==null){
+          tipoop="";
+      }
+      if (estado==null){
+          estado="";
+      }
+      List<operacionesOrdent> lista = null;
+      operacionesOrdent operacionesordent=null;
+      String consulta;
+      
+      System.out.println("VALORES "+id+" "+tipoop+" "+estado);
+      try{
+        consulta="SELECT op FROM operacionesOrdent op WHERE op.ordentrabajo.id = ?1 AND (op.estado = ?3 AND op.tipooperaciones = ?2) ORDER BY op.fechapago DESC";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1,id);
+        query.setParameter(2,tipoop);
+        query.setParameter(3,estado);
+      
+        lista = query.getResultList();
+        
+        System.out.println("VALORES "+lista.size());
+        System.out.println("VALORES "+!lista.isEmpty());
+        if (!lista.isEmpty()){
+            operacionesordent=lista.get(0);
+            System.out.println("VALORES dentro IF "+lista.size()+" " +lista.get(0).getOrdentrabajo());
+        }
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      //System.out.println("VALORES a retornar "+operacionesordent.getId());
+      return operacionesordent;
     }
     
 }

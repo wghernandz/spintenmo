@@ -87,8 +87,8 @@
         
     </p:dataTable>   
 </h:form>
-<h:form id="linkform">
-    <p:commandButton value="AGREGAR TRABAJO MECANICA O TALLER" onclick="PF('tallermecanica').show();"    action="#{asignarcostoController.crearOperacionot}" update="tmec" />
+<h:form id="linkform" >
+    <p:commandButton value="AGREGAR TRABAJO MECANICA O TALLER" onclick="PF('tallermecanica').show();"    action="#{asignarcostoController.crearOperacionot}" update="tmec" rendered="#{asignarcostoController.obtenerRole()!=4}"/>
 </h:form>
             <p:dialog header="Agregar" id="tallermec" widgetVar="tallermecanica" showEffect="explode" hideEffect="bounce" height="400" width="500" closable="true">
                     <h:form id="tmec" >
@@ -142,7 +142,7 @@
       <h2>ORDENES DE TRABAJO ACTIVAS</h2>
       <h4>Click sobre montos para realizar cambios</h4>
       <h:form id="form" >
-          <p:dataTable id="tbl" var="orden" value="#{asignarcostoController.ottodas}"
+          <p:dataTable id="tbl" var="orden" value="#{asignarcostoController.ottodas}" rendered="#{asignarcostoController.obtenerRole()!=4}"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
                  paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
                  emptyMessage="No Operaciones found with given criteria" filteredValue="#{asignarcostoController.filteredottodas}">

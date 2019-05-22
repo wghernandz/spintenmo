@@ -204,4 +204,27 @@ public class ordenTrabajoFacade extends AbstractFacade<ordenTrabajo> implements 
         return ot;
     }
     
+          //Obtener OT segun placa
+    @Override
+    public List<ordenTrabajo> otSegunplaca(String placa){
+      List<ordenTrabajo> lista = null;
+      ordenTrabajo orden=null;
+      String consulta;
+      try{
+        consulta="SELECT ot FROM ordenTrabajo ot WHERE ot.placa LIKE ?1 ORDER BY ot.id DESC ";
+        Query query=em.createQuery(consulta);
+        query.setParameter(1, "%"+placa+"%");
+      
+        lista = query.setMaxResults(10).getResultList();
+        
+          if (!lista.isEmpty()){
+            orden=lista.get(0);  
+      }
+    
+      }catch (Exception e){
+       System.out.println(e.getMessage());
+      }
+      return lista;
+    }  
+    
 }

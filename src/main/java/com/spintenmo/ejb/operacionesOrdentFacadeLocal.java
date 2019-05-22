@@ -5,6 +5,7 @@
  */
 package com.spintenmo.ejb;
 
+import com.spintenmo.modelo.Aux_detallepagoorden;
 import com.spintenmo.modelo.Descuentos;
 import com.spintenmo.modelo.anticipoMo;
 import com.spintenmo.modelo.empleadoMo;
@@ -68,4 +69,10 @@ public interface operacionesOrdentFacadeLocal {
     List<operacionesOrdent> otpagadaXplaca(String placa,String tipoop, String estado); 
    
     List<operacionesOrdent> otEstadosvarios();
+    
+    List<Aux_detallepagoorden> otPagadasdetalle(int ordenabuscar, String tipoop);
+    
+    operacionesOrdent otpagadaPlaca(String placa,String tipoop,String estado);
+    
+    operacionesOrdent otpagadaIdorden(int id,String tipoop,String estado);
 }

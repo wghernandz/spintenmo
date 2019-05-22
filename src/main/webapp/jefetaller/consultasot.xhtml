@@ -12,6 +12,7 @@
         <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
 
         <ui:define name="content">
+            <p:growl id="msgs" showDetail="true" autoUpdate="true"/>
             <h:form>
                 <h:panelGrid columns="6">
                     <h:outputText value="DIGITE PLACA" />
@@ -25,11 +26,64 @@
                     <p:selectOneMenu id="estado" value="#{consultasotController.estado}" style="width:200px">
                         <f:selectItem itemLabel="Pagada" itemValue="Pagada"/>
                     </p:selectOneMenu>
-                    <p:commandButton value="BUSCAR" action="#{consultasotController.buscarXplaca()}" update="form"/>
+                    <p:commandButton value="BUSCAR" action="#{consultasotController.buscarXplaca()}" update="form,datosgenerales,placasrepetidas"/>
+                </h:panelGrid>
+            </h:form>
+           
+            <h:form id="placasrepetidas" >
+                <h:outputText style="font-size: 16px;font-weight: bold;" value="La placa #{consultasotController.placa} tiene varios registros.CLICK sobre CODIGO para obtener detalle" rendered="#{consultasotController.placarep}"/>
+                 <p:dataTable id="tbl" var="list" value="#{consultasotController.placasrepLIST}" rendered="#{consultasotController.placarep}"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                        paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
+                        emptyMessage="No Operaciones found with given criteria" >
+                    <f:facet name="{Exporters}">
+                    <h:commandLink>
+                        <p:graphicImage name="/imagenes/excel.png" width="24"/>
+                        <p:dataExporter type="xls" target="tbl" fileName="Ordenes-por-Asignar" />
+                    </h:commandLink>
+                    <h:commandLink>
+                        <p:graphicImage name="/imagenes/pdf.png" width="24"/>
+                        <p:dataExporter type="pdf" target="tbl" fileName="Ordenes-por-Asignar" />
+                    </h:commandLink>
+ 
+                    </f:facet>
+                    <p:column headerText="Estado" width="100" >
+                    <f:facet name="header">
+                            <h:outputText value="CODIGO" /> 
+                    </f:facet>
+                        <p:commandLink action="#{consultasotController.buscarXplaca(list)}" update="datosgenerales,form" >
+                            <h:outputText value="#{list.ordentrabajo.codigo}" />
+                         </p:commandLink>
+                    </p:column>
+                    <p:column width="300" headerText="OPERARIO" exportable="false">
+                    <f:facet name="header">
+                        <h:outputText value="OPERARIO" />
+                    </f:facet>
+                        <h:outputText value="#{list.empleadomo.persona.primernombre} #{list.empleadomo.persona.segundonombre} #{list.empleadomo.persona.primerapellido} #{list.empleadomo.persona.segundoapellido}" />
+                    </p:column>
+                  
+                    </p:dataTable>
+             </h:form>
+            <h:form id="datosgenerales">
+                <h:panelGrid columns="8">
+                <h:outputText value="CODIGO ORDEN" />
+                <h:inputText value="#{consultasotController.operacionesordent.ordentrabajo.codigo}" required="true" readonly="true"/>
+                <h:outputText value="ASEGURADORA" />
+                <h:inputText value="#{consultasotController.operacionesordent.ordentrabajo.aseguradoracliente.nombrecliente}" required="true" readonly="true"/>
+                <h:outputText value="MARCA" />
+                <h:inputText value="#{consultasotController.operacionesordent.ordentrabajo.modelot.marca.nombremarca}" required="true" readonly="true"/>
+                <h:outputText value="MODELO" />
+                <h:inputText value="#{consultasotController.operacionesordent.ordentrabajo.modelot.nombremodelo}" required="true" readonly="true"/>
+                <h:outputText value="PLACA" />
+                <h:inputText value="#{consultasotController.operacionesordent.ordentrabajo.placa}" required="true" readonly="true"/>
+                <h:outputText value="TIPO OPERACION" />
+                <h:inputText value="#{consultasotController.operacionesordent.tipooperaciones}" required="true" readonly="true"/>
+                <h:outputText style="font-weight: bold;" value="MONTO DE ORDEN $" />
+                <p:inputNumber value="#{consultasotController.operacionesordent.montomo}" decimalPlaces="2" required="true" readonly="true"/>
                 </h:panelGrid>
             </h:form>
         <h:form id="form" >
-            <p:dataTable id="tbl" var="orden" value="#{consultasotController.operacionesordentLIST}"
+            <p:dataTable id="tbl" var="aux" value="#{consultasotController.auxdetallepagoordenLIST}"
                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
                         paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" 
                         emptyMessage="No Operaciones found with given criteria" >
@@ -45,77 +99,44 @@
                 </h:commandLink>
  
                 </f:facet>
-                <p:column width="120" headerText="Codigo" exportable="false">
+            <p:column width="300" headerText="Operario" exportable="false">
                     <f:facet name="header">
-                        <h:outputText value="Codigo Orden" />
+                        <h:outputText value="Operario" />
                     </f:facet>
-                        <h:outputText value="#{orden.ordentrabajo.codigo}" />
-                </p:column>
+                        <h:outputText value="#{aux.nombreoperario}" />
+            </p:column>
                         
-            <p:column headerText="Placa" >
+            <p:column headerText="Estado" width="100" >
                 <f:facet name="header">
-                    <h:outputText value="Placa" />
-                </f:facet>
-                <h:outputText value="#{orden.ordentrabajo.placa}" />
-            </p:column>
-        
-            <p:column width="75">
-                <f:facet name="header">
-                    <h:outputText value="Tipo Operaciones" />
-                </f:facet>
-                <h:outputText value="#{orden.tipooperaciones}"/>
-            </p:column>
-        
-            <p:column width="100" >
-                <f:facet name="header"> 
                     <h:outputText value="Estado" />
                 </f:facet>
-                    <h:outputText value="#{orden.estado=='Anticipo' ? 'Pago Anticipado':orden.estado}" />
+                <h:outputText value="#{aux.estado}" />
             </p:column>
-                
-            <p:column width="90">
+        
+            <p:column width="100">
                 <f:facet name="header">
                     <h:outputText value="Monto" />
                 </f:facet>
-                <h:outputText value="#{orden.montoplanilla}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+                <h:outputText value="#{aux.monto}"><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            </p:column>
+        
+                
+            <p:column width="100">
+                <f:facet name="header">
+                    <h:outputText value="Monto Pendiente" />
+                </f:facet>
+                <h:outputText value="#{aux.montopendiente}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
             </p:column>
                 
-            <p:column width="80">
+            <p:column width="100">
                 <f:facet name="header">
                     <h:outputText value="Fecha de Cancelacion" />
                 </f:facet>
-                <h:outputText value="#{orden.fechapago}" >
+                <h:outputText value="#{aux.fechaaplicacion}" >
                     <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
                 </h:outputText>
             </p:column>
-                
-            <p:column width="90">
-                <f:facet name="header">
-                    <h:outputText value="Operario" />
-                </f:facet>
-                <h:outputText value="#{orden.empleadomo.persona.primernombre} #{orden.empleadomo.persona.segundonombre} #{orden.empleadomo.persona.primerapellido} #{orden.empleadomo.persona.segundoapellido}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
-            </p:column> 
- 
-            <p:column width="200">
-                <f:facet name="header">
-                    <h:outputText value="Aseguradora"/>
-                </f:facet>
-                <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
-            </p:column>
-        
-            <p:column>
-                <f:facet name="header">
-                    <h:outputText value="Marca" />
-                </f:facet>
-                <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
-            </p:column>
-        
-            <p:column>
-                <f:facet name="header">
-                    <h:outputText value="Modelo" />
-                </f:facet>
-                <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}" />
-            </p:column>   
+                  
         </p:dataTable>
  
     <h3>Exportar Datos solo de esta Página</h3>
@@ -126,14 +147,14 @@
  
     <h:commandLink>
         <p:graphicImage name="/imagenes/pdf.png" />
-        <p:dataExporter type="pdf" target="tbl" fileName="cars" pageOnly="true" options="#{otPorasignarController.pdfOpt}"/>
+        <p:dataExporter type="pdf" target="tbl" fileName="cars" pageOnly="true" />
     </h:commandLink>
     </h:form>
 
     </ui:define>
 
             <ui:define name="bottom">
-                bottom
+                
             </ui:define>
 
         </ui:composition>

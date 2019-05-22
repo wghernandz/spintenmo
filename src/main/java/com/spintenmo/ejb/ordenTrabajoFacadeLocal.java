@@ -45,4 +45,6 @@ public interface ordenTrabajoFacadeLocal {
     
     ordenTrabajo otPlacafechautoriz(String placa);
     
+    List<ordenTrabajo> otSegunplaca(String placa);
+    
 }
