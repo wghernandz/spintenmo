@@ -289,7 +289,6 @@ public class asignarcostoController implements Serializable {
 
     //pendiente //no utilizado actualmente
    public List<ordenTrabajo> onFilter(AjaxBehaviorEvent event) {
-        //System.out.println("FILTRAMOS LA TABLA");
         DataTable table = (DataTable) event.getSource();
         
         List<ordenTrabajo> obj = table.getFilteredValue();
@@ -298,26 +297,20 @@ public class asignarcostoController implements Serializable {
         this.setOrdenesnoasignadas(obj);
         if (obj != null) {
             System.out.println("filtered = " + obj.size());
-            System.out.println("probando"+obj.get(0).getCodigo());
-            System.out.println("probando"+obj.get(2).getCodigo());
-            System.out.println("probando"+obj.get(3).getCodigo());
+           
         } else {
             System.out.println("No records found");
         }
         Map<String, Object> filters = table.getFilters();
         ArrayList valores= new ArrayList(filters.values());
-        
-        
-        System.out.println("VALOR FILTRADO"+valores.get(0).toString());
-         System.out.println("VALOR FILTRADO"+table.getColumns().get(0).getColumnKey());
-        System.out.println("VALOR FILTRADO"+table.getColumns().get(0).getField());
+       
          
         Iterator it = filters.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry e = (Map.Entry)it.next();
         System.out.println(e.getKey() + " " + e.getValue());
            
-        System.out.println("ordenTrabajo filtrado"+e.getValue());  
+        
         }
         return obj;
     }
@@ -501,26 +494,30 @@ public class asignarcostoController implements Serializable {
         UIViewRoot view = FacesContext.getCurrentInstance().getViewRoot();
         return view.getViewId() + "?faces-redirect=true";
     }
+    
        public void cambiarMontoneg(){
         
             operacionesordent.setMontomo(this.operacionesordent.getMontomo());
             operacionesordent.setMontopendiente(this.operacionesordent.getMontomo());
+            operacionesordent.setMontoplanilla(this.operacionesordent.getMontomo());
+            operacionesordent.setEstado(this.operacionesordent.getEstado());
             operacionesordentEJB.edit(operacionesordent);
-            init();
-              
-   }  
-       public void crearOperacionot(){
+            init();        
+   }
+       
+       public void crearOperacionot(){       
            operacionesordent=new operacionesOrdent();
            this.aseguradoracliente=new aseguradoraCliente();
            marca=new Marca();
-           modelo=new Modelo();
-       }
+           modelo=new Modelo();       
+    }
        
        public void cambiarMontomax(){
            operacionesordent.setMontomax(this.operacionesordent.getMontomax());
            operacionesordent.setMontomin(this.operacionesordent.getMontomax());
            operacionesordent.setMontomaxp(this.operacionesordent.getMontomaxp());
            operacionesordent.setMontominp(this.operacionesordent.getMontomaxp());
+           operacionesordent.setEstado(this.operacionesordent.getEstado());
            operacionesordentEJB.edit(operacionesordent);
            init();
        }

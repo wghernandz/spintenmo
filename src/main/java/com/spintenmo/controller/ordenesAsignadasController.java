@@ -457,7 +457,7 @@ public class ordenesAsignadasController implements Serializable{
     //Metodo para actualizar a estado finalizado todas las ordenes que posean estado finalizado o anticipo para calculo de planilla; 
     public String finalizarTodo(){
         
-          operacionesordentEJB.finalizarTodo();
+        /*operacionesordentEJB.finalizarTodo();*/
           
            FacesContext.getCurrentInstance().addMessage(
         null, new FacesMessage("Ordenes Actualizadas"));
