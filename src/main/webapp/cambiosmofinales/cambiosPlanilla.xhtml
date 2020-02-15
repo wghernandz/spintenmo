@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"      
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <body>
+
+        <ui:composition template="./../WEB-INF/templates/plantillabase.xhtml">
+
+            <ui:define name="content">
+             
+      <h2>ORDENES DE TRABAJO ACTIVAS</h2>
+      <h4>Cambios Finales</h4>
+      <h:form id="form" >
+        <p:dataTable id="tbl" var="orden"  
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                 paginator="true" rows="10" style="margin-bottom:20px" widgetVar="otpasigTable" value="#{cambiosFinalesController.operacionesot}"
+                 emptyMessage="No Operaciones found with given criteria">
+ 
+        <p:column width="120"  headerText="Codigo" footerText="contains" filterMatchMode="contains" exportable="false">
+            <f:facet name="header">
+                <h:outputText value="Codigo Orden" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.codigo}"  />
+        </p:column>
+                        
+        <p:column  headerText="Placa" footerText="contains" filterMatchMode="contains" width="50">
+            <f:facet name="header">
+                <h:outputText value="Placa" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.placa}" />
+        </p:column>
+        
+        <p:column width="200">
+            <f:facet name="header">
+                <h:outputText value="Aseguradora"/>
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.aseguradoracliente.nombrecliente}" />
+        </p:column>
+              
+        <p:column width="70">
+            <f:facet name="header">
+                <h:outputText value="Tipo Operaciones" />
+            </f:facet>
+            <h:outputText value="#{orden.tipooperaciones}" />
+        </p:column>
+        
+        <p:column width="90" >
+            <f:facet name="header"> 
+                <h:outputText value="Estado" />
+            </f:facet>
+            <p:commandLink update=":formestado" oncomplete="PF('dlgestado').show();" >
+                <h:outputText value="#{orden.estado}"/>
+            </p:commandLink>
+        </p:column>
+                        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Minimo" />
+            </f:facet>
+            <h:outputText value="#{orden.montomin}"><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            <h:outputText ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+        </p:column>
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Maximo" />
+            </f:facet>
+            <p:commandLink oncomplete="PF('dlgcambiarmontomax').show();" >
+                <h:outputText value="#{orden.montomax}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            <h:outputText  ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+            </p:commandLink>
+        </p:column>
+              
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto a Pagar" />
+            </f:facet>
+             <p:commandLink oncomplete="PF('dlg5').show();"   >
+                 <h:outputText value="#{orden.montomo}" ><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+              </p:commandLink>
+        </p:column>
+              
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Monto Pendiente" />
+            </f:facet>
+            <h:outputText value="#{orden.montopendiente}"><f:convertNumber type="decimal" pattern="$ 0.00"/></h:outputText>
+        </p:column>
+              
+        <p:column width="100">
+            <f:facet name="header">
+                <h:outputText value="Operario" />
+            </f:facet>
+            <h:outputText value="#{orden.empleadomo.persona.primernombre}"></h:outputText>
+        </p:column>
+        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Marca" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.marca.nombremarca}" />
+        </p:column>
+        
+        <p:column width="50">
+            <f:facet name="header">
+                <h:outputText value="Modelo" />
+            </f:facet>
+            <h:outputText value="#{orden.ordentrabajo.modelot.nombremodelo}"/>
+        </p:column>   
+        
+    </p:dataTable>
+ 
+    </h:form>
+      
+        <p:dialog header="Cambiar Estado" id="modestado" widgetVar="dlgestado" showEffect="explode" hideEffect="bounce" height="100" width="350" closable="false">
+                    <h:form id="formestado">
+                        <h:panelGrid columns="4" cellpadding="3">
+                            <h:outputText value="Cambiar a Estado:"/>
+               
+                            <p:selectOneMenu id="cambestado" style="width:200px" required="true" value="#{estado}"  onchange="submit()" valueChangeListener="#{cambiosFinalesController.cambiarEstado}">
+                                <f:selectItems value="#{cambiosFinalesController.opcEstadoCostoAsignado}" var="estado" itemLabel="#{estado}" itemValue="#{estado}" >
+                                </f:selectItems>
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                            <p:commandButton value="ACEPTAR" id="cambiar" icon="ui-icon-disk" 
+                                             action="#{cambiosFinalesController.cambiarEstado}" update=":form" oncomplete="PF('dlgestado').hide()" onsuccess=":mismsg" >
+                            </p:commandButton>
+                                
+                            <p:spacer></p:spacer>
+                            <p:commandButton value="CANCELAR" id="cancel" onclick="dlgestado.hide();" immediate="true" update="modestado"/>   
+                          </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+         </p:dialog>
+      
+    <p:dialog header="ASIGNAR OPERARIO" id="asignar" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" height="250" width="700" closable="false">
+    <h:form id="form2">
+        <p:growl id="mismsg" />
+                <p:outputPanel id="ordenDetail" style="text-align:center;">
+                    <c:set var="operacionesordent" />   
+                <h:panelGrid columns="4" cellpadding="3">
+                <h:outputText value="Codigo de OT"/>
+                <h:inputText id="codigoop" value="#{otPorasignarController.operacionesordent.ordentrabajo.codigo}" disabled="true"></h:inputText>
+                <h:outputText value="Estado de OT"/>
+                <h:inputText id="estadoop" value="#{otPorasignarController.operacionesordent.estado}" disabled="true"></h:inputText>
+                <h:outputText value="Tipo de Operacion"/>
+                <h:inputText id="toperacion" value="#{otPorasignarController.operacionesordent.tipooperaciones}" disabled="true"></h:inputText>
+                <h:outputText value="Costo Minimo"/>
+                <h:inputText id="vminimo" value="#{(otPorasignarController.operacionesordent.montomin)== null ? otPorasignarController.operacionesordent.montominp : otPorasignarController.operacionesordent.montomin }" disabled="true">
+                <f:convertNumber type="decimal" pattern="$ 0.00"/>
+                </h:inputText>
+                <h:outputText value="Costo Maximo"/>
+                <h:inputText id="vmaximo" value="#{(otPorasignarController.operacionesordent.montomax) == null ? otPorasignarController.operacionesordent.montomaxp : otPorasignarController.operacionesordent.montomax  }" disabled="true">
+                <f:convertNumber type="decimal" pattern="$ 0.00"/>
+                </h:inputText>
+                <p:selectBooleanCheckbox value="#{otPorasignarController.noaplica}" onchange="#{otPorasignarController.setNoaplica(noaplica)}" >
+                    NO APLICA
+                    <p:ajax event="change" update="costosp"/>
+                </p:selectBooleanCheckbox>
+                </h:panelGrid>
+                
+                <h:outputText value="ASIGNACION OPERARIO"/>
+                
+                <h:panelGrid id="costosp" columns="5" cellpadding="3">
+                    <h:outputText value="Seleccione Empleado: " rendered="#{otPorasignarController.noaplica==false}"/>
+                <p:selectOneMenu id="empmo" value="#{otPorasignarController.persona.id}" style="width:170px" required="true" requiredMessage="Empleado es REQUERIDO" rendered="#{otPorasignarController.noaplica==false}">
+                    <f:selectItem itemLabel="Seleccione Empleado" itemValue="" noSelectionOption="true"></f:selectItem> 
+                    <f:selectItems value="#{otPorasignarController.empleadosmo}" var="mimo" itemLabel="#{mimo.persona.primernombre} #{mimo.persona.segundonombre} #{mimo.persona.primerapellido} #{mimo.persona.segundoapellido}" itemValue="#{mimo.persona.id}" ></f:selectItems>
+                </p:selectOneMenu>
+                
+                <!--<h:outputText value="Fecha finalizacion:"/>
+                <p:calendar id="ffin" value="" readonlyInput="true" locale="es"></p:calendar>-->
+                
+                <h:outputText value="Costo Negociado $" rendered="#{otPorasignarController.noaplica==false}"/>
+                <p:inputNumber id="costonegociado" value="#{otPorasignarController.operacionesordent.montomo}" 
+                               validatorMessage="El monto Neg. debe estar entre el Minimo y el Maximo" validator="#{otPorasignarController.validate}"
+                               required="true" requiredMessage="Monto negociado REQUERIDO" autocomplete="off" rendered="#{otPorasignarController.noaplica==false}" ></p:inputNumber>
+             
+                <p:commandButton value="INGRESAR" id="guardarpin" icon="ui-icon-disk" 
+                                 action="#{otPorasignarController.asignarOperario()}" update=":form" onsuccess=":mismsg"  >
+                </p:commandButton>    
+                <p:commandButton value="CANCELAR" id="cancel" onclick="dlg3.hide();" update=":form" immediate="true"/>
+                </h:panelGrid>
+               
+                </p:outputPanel>
+    </h:form>    
+    </p:dialog>
+      
+      
+            </ui:define>
+            <ui:define name="bottom">
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

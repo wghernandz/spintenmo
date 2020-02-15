@@ -15,7 +15,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.exception;
 
 @Named
 @ViewScoped

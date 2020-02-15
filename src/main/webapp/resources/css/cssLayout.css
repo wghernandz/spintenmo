@@ -2,7 +2,7 @@
 #top {
     position: relative;
     background-color: #036fab;
-    color: white;
+    color: black;
     padding: 5px;
     margin: 0px 0px 10px 0px;
 }
@@ -47,13 +47,13 @@
 }
 
 #top a:link, #top a:visited {
-  color: white;
+  color: black;
   font-weight : bold;
   text-decoration: none;
 }
 
 #top a:link:hover, #top a:visited:hover  {
-  color: black;
+  color: burlywood;
   font-weight : bold;
   text-decoration : underline;
 }

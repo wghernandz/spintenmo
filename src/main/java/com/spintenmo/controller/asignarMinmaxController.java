@@ -26,7 +26,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.exception;
 import org.primefaces.component.inputtext.InputText;
 
 

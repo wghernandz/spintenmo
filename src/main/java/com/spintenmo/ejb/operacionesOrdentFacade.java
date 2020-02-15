@@ -133,7 +133,7 @@ public class operacionesOrdentFacade extends AbstractFacade<operacionesOrdent> i
      
       try{
         String consulta;
-        consulta="SELECT em FROM empleadoMo em WHERE em.cargo = ?1";
+        consulta="SELECT em FROM empleadoMo em, Persona p WHERE em.persona.id=p.id and em.cargo = ?1 and p.estado = 1";
         Query query=em.createQuery(consulta);
         
         if ("pintura".equals(operacion)){

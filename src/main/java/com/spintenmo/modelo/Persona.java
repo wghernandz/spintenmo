@@ -52,6 +52,8 @@ public class Persona implements Serializable{
     private Date fechaingreso;
     @Column(name="email")
     private String email;
+    @Column(name="estado")
+    private int estado;
 
     public int getId() {
         return id;
@@ -155,6 +157,14 @@ public class Persona implements Serializable{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
     }
     
 }

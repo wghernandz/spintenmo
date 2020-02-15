@@ -39,6 +39,7 @@
                            actionListener="#{asignarcostoController.setOrdentrabajo(orden)}" 
                            value="#{orden.codigo}" disabled="#{asignarcostoController.obtenerRole()==4}">     
             </p:commandLink>
+            <p:commandButton value="costear" action="#{asignarcostoController.pruebaBoton(orden)}" ></p:commandButton>
         </p:column>
         
         <p:column filterBy="#{orden.placa}" headerText="Placa" footerText="contains" filterMatchMode="contains">

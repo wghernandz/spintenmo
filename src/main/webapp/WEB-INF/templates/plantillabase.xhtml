@@ -78,7 +78,9 @@
            <p:menuitem value="Consultas OT Pagadas" url="/jefetaller/consultasot.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}"  />
            <p:menuitem value="Reportes OT" url="/jefetaller/reportesotj.xhtml" icon="ui-icon-folder-open" rendered="#{plantillaController.obtenerRole()==3 or plantillaController.obtenerRole()==1 or plantillaController.obtenerRole()==4}" />
         </p:submenu>
-        
+        <p:submenu label="Cambios MO" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==1}">
+            <p:menuitem value="Cambios MO Planilla" url="/cambiosmofinales/cambiosPlanilla.xhtml" icon="ui-icon-folder-open" />
+        </p:submenu>
          <p:submenu label="Planilla" icon="ui-icon-folder-collapsed" rendered="#{plantillaController.obtenerRole()==5 or plantillaController.obtenerRole()==1}">
            <p:menuitem value="Ingreso de Operarios" url="/contabilidad/ingresooperarios.xhtml" icon="ui-icon-folder-open" />
            <p:menuitem value="Descuentos a Operarios" url="/contabilidad/descuentos.xhtml" icon="ui-icon-folder-open" />
@@ -103,7 +105,7 @@
         </div>
 
         <div id="bottom">
-            <ui:insert name="bottom">Bottom</ui:insert>
+            <ui:insert name="bottom"></ui:insert>
         </div>
 
     </h:body>

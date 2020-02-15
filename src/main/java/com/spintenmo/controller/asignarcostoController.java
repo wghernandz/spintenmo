@@ -521,4 +521,10 @@ public class asignarcostoController implements Serializable {
            operacionesordentEJB.edit(operacionesordent);
            init();
        }
+       
+        public String pruebaBoton(ordenTrabajo ordentrabajo) {
+            System.out.println("Entro");
+        this.ordentrabajo = ordentrabajo;
+        return "asignarminmaxOrden";
+    }
 }
